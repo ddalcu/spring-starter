@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+<head>
+<title>REGISTER</title>
+</head>
+<body>
+    <h1 layout:fragment="header">REGISTER</h1>
+    <div layout:fragment="content">
+        <div class="content">
+
+            <h2>register with Username and Password</h2>
+            <form name="form" th:action="@{/user/register}" action="/user/register" method="POST">
+                <fieldset>
+                    <input type="text" name="name" value="" placeholder="name" />
+                    <input type="password" name="password" placeholder="Password" />
+                </fieldset>
+                <input type="submit" id="login" value="Register"
+                    class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</body>
+</html>
