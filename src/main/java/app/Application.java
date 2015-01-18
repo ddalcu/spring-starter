@@ -19,6 +19,7 @@ package app;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,7 +43,9 @@ import app.services.UserService;
 @SpringBootApplication
 @Controller
 public class Application {
-
+    
+    public static Logger log = Logger.getLogger(Application.class.getName());
+    
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class, args);
     }

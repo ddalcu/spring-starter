@@ -12,9 +12,9 @@
 
             <h2>register with Username and Password</h2>
             
-            <p th:if="${formErrors}" th:text="${formErrors}" class="alert">Errors go here</p>
-            
-            <form name="form" th:action="@{/user/register}" action="/user/register" method="POST">
+            <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
+
+            <form name="form" id="form" th:action="@{/user/register}" action="/user/register" method="POST">
                 <fieldset>
                     <input type="text" name="name" value="" placeholder="name" />
                     <input type="password" name="password" placeholder="Password" />

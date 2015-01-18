@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -28,6 +30,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired 
+    private JavaMailSender javaMailSender;
+    
     @Autowired
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -59,12 +64,28 @@ public class UserController {
             return new ModelAndView("user/register", "formErrors", result.getAllErrors());
         }
         if (userService.register(user)) {
+            SimpleMailMessage m = new SimpleMailMessage();
+            m.setTo(user.getEmail());
+            m.setSubject("Please verify your email address");
+            //m.setFrom("");
+            m.setText("Please verify your email address by clicking this ${link}");
+            javaMailSender.send(m);
             return new ModelAndView("user/register-success");
         } else {
             return new ModelAndView("user/register", "formErrors", "User already exists");
         }
     }
-
+    
+    @RequestMapping("/user/mail")
+    public @ResponseBody Boolean mail() {
+        SimpleMailMessage m = new SimpleMailMessage();
+        m.setTo("master@asus");
+        m.setSubject("Test from spring");
+        m.setText("This is a message");
+        javaMailSender.send(m);
+        return true;
+    }
+    
     @RequestMapping("/user/delete")
     public @ResponseBody Boolean delete(Long id) {
         userService.delete(id);
@@ -74,5 +95,10 @@ public class UserController {
     @RequestMapping("/user/get")
     public @ResponseBody Iterable<User> get() {
         return userRepository.findAll();
+    }
+    
+    @RequestMapping("/user/activate")
+    public @ResponseBody Boolean activate(String activation) {
+        return userService.activate(activation);
     }
 }
