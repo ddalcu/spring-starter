@@ -4,9 +4,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +18,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import app.models.User;
 import app.repositories.UserRepository;
+import app.services.MailService;
 import app.services.UserService;
 
 @Controller
 // @RequestMapping("/user/*")
 public class UserController {
+    @Value("${user.require-activation}")
+    private Boolean requireActivation;
+    
     private final UserRepository userRepository;
 
     @Autowired
@@ -29,9 +34,6 @@ public class UserController {
     
     @Autowired
     private UserService userService;
-
-    @Autowired 
-    private JavaMailSender javaMailSender;
     
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -45,6 +47,8 @@ public class UserController {
 
     @RequestMapping("/user/list")
     public ModelAndView list() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Logged in::" + authentication.getName());
         Iterable<User> users = this.userRepository.findAll();
         return new ModelAndView("user/list", "users", users);
     }
@@ -63,13 +67,13 @@ public class UserController {
         if (result.hasErrors()) {
             return new ModelAndView("user/register", "formErrors", result.getAllErrors());
         }
+        
         if (userService.register(user)) {
-            SimpleMailMessage m = new SimpleMailMessage();
-            m.setTo(user.getEmail());
-            m.setSubject("Please verify your email address");
-            //m.setFrom("");
-            m.setText("Please verify your email address by clicking this ${link}");
-            javaMailSender.send(m);
+            MailService.sendMail(user.getEmail(), "Test", "You have registered");
+            if(!requireActivation) {
+                userService.autoLogin(user.getUserName());
+                return new ModelAndView("redirect:/");
+            }
             return new ModelAndView("user/register-success");
         } else {
             return new ModelAndView("user/register", "formErrors", "User already exists");
@@ -78,11 +82,7 @@ public class UserController {
     
     @RequestMapping("/user/mail")
     public @ResponseBody Boolean mail() {
-        SimpleMailMessage m = new SimpleMailMessage();
-        m.setTo("master@asus");
-        m.setSubject("Test from spring");
-        m.setText("This is a message");
-        javaMailSender.send(m);
+        MailService.sendMail("master@asus", "Test from spring", "This is a message");
         return true;
     }
     
@@ -100,5 +100,11 @@ public class UserController {
     @RequestMapping("/user/activate")
     public @ResponseBody Boolean activate(String activation) {
         return userService.activate(activation);
+    }
+    
+    @RequestMapping("/user/autologin")
+    public String autoLogin(User user) {
+        userService.autoLogin(user.getUserName());
+        return "redirect:/";
     }
 }

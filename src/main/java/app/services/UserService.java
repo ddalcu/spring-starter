@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +26,7 @@ public class UserService implements UserDetailsService {
     private Boolean requireActivation;
     
     private UserRepository repo;
-
+    
     @Autowired
     public UserService(UserRepository repo) {
         this.repo = repo;
@@ -31,7 +34,7 @@ public class UserService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByName(username);
+        User user = repo.findByUserName(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
@@ -39,22 +42,33 @@ public class UserService implements UserDetailsService {
             Application.log.debug("User [" + username + "] tried to login but is not activated");
             throw new UsernameNotFoundException(username);
         }
-        List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
-        if (username.equals("admin")) {
-            auth = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
-        }
+        
+        List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole());
+
         String password = user.getPassword();
 
         return new org.springframework.security.core.userdetails.User(username, password, auth);
+    }
+    
+    public Boolean autoLogin(String username) {
+        UserDetails userDetails = this.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken (userDetails, null, userDetails.getAuthorities());
+        
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        if(auth.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated(); 
     }
 
     public Boolean register(User user) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if (this.repo.findByName(user.getName()) == null) {
+        if (this.repo.findByUserName(user.getUserName()) == null) {
             Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String activation = encoder.encodePassword(user.getName(), "Application.secret");
+            String activation = encoder.encodePassword(user.getUserName(), "Application.secret");
             Application.log.debug("Setting user activation to-" + activation);
             user.setActivation(activation);
             this.repo.save(user);

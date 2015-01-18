@@ -14,7 +14,7 @@ public class User {
     
     @NotNull
     @Size(min = 1, max = 100)
-    private String name;
+    private String userName;
     
     @NotNull
     @Size(min = 1, max = 100)
@@ -26,16 +26,27 @@ public class User {
     
     private String activation;
     
+    private String role = "ROLE_USER";
+    
+    private String firstName;
+    
+    private String lastName;
+    
+    private String address;
+    
+    private String companyName;
+
+    
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String name) {
+        this.userName = name;
     }
 
     public String getPassword() {
@@ -60,5 +71,45 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 }

@@ -64,13 +64,12 @@ public class Application {
     public ApplicationSecurity applicationSecurity() {
         return new ApplicationSecurity();
     }
-
+    
     @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
     protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
         @Autowired
         private SecurityProperties security;
-
 
         @Autowired
         private UserService userService;
@@ -79,14 +78,16 @@ public class Application {
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
             .antMatchers("/user/register").permitAll()
-            .antMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().fullyAuthenticated()
             .and()
-            .formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
+                .formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
             .and()
-            .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
+                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login")
+            .and()
+                .rememberMe()
+                .tokenValiditySeconds(31536000);
         }
-
+        
         @Override
         public void configure(AuthenticationManagerBuilder auth) throws Exception {
             auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());

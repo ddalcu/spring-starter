@@ -6,12 +6,13 @@
 <title>USER LIST</title>
 </head>
 <body>
+
     <h1 layout:fragment="header">USER LIST</h1>
     <div layout:fragment="content">
-        USER LISTsasdas
+        USER LIST
         <ul>
         <li th:each="user : ${users}">
-            <span th:text="${user.name}"></span><a th:href="@{/user/delete(id=${user.id})}">Delete</a>
+            <span th:text="${user.userName}"></span><a th:href="@{/user/autologin(userName=${user.userName})}">Login As</a> | <a th:href="@{/user/delete(id=${user.id})}">Delete</a>
         </li>
         </ul>
     </div>
