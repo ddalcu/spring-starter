@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.models.User;
@@ -34,8 +35,25 @@ public class UserService implements UserDetailsService {
             auth = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
         }
         String password = user.getPassword();
-        
+
         return new org.springframework.security.core.userdetails.User(username, password, auth);
+    }
+
+    public Boolean register(User user) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (this.repo.findByName(user.getName()) == null) {
+            this.repo.save(user);
+            return true;
+        }
+
+        return false;
+    }
+    
+    public Boolean delete(Long id) {
+        this.repo.delete(id);
+        return true;
     }
 
 }

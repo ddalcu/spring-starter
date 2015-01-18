@@ -11,6 +11,9 @@
         <div class="content">
 
             <h2>register with Username and Password</h2>
+            
+            <p th:if="${formErrors}" th:text="${formErrors}" class="alert">Errors go here</p>
+            
             <form name="form" th:action="@{/user/register}" action="/user/register" method="POST">
                 <fieldset>
                     <input type="text" name="name" value="" placeholder="name" />

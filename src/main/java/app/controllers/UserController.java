@@ -1,9 +1,10 @@
 package app.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,49 +15,64 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import app.models.User;
 import app.repositories.UserRepository;
+import app.services.UserService;
 
 @Controller
-//@RequestMapping("/user/*")
+// @RequestMapping("/user/*")
 public class UserController {
     private final UserRepository userRepository;
+
+    @Autowired
+    protected AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
+
     @RequestMapping("/login")
     public String login() {
         return "user/login";
     }
-    
+
     @RequestMapping("/user/list")
     public ModelAndView list() {
         Iterable<User> users = this.userRepository.findAll();
         return new ModelAndView("user/list", "users", users);
     }
-    
+
     @RequestMapping(value = "/user/register", method = RequestMethod.GET)
     public String register() {
         return "user/register";
     }
-    
-    /*This method should be customized by you, do not use it in its current form, needs much improvement */
+
+    /*
+     * This method should be customized by you, do not use it in its current
+     * form, needs much improvement
+     */
     @RequestMapping(value = "/user/register", method = RequestMethod.POST)
-    public @ResponseBody User register(@Valid User user, BindingResult result,
-            RedirectAttributes redirect) {
+    public ModelAndView register(@Valid User user, BindingResult result, RedirectAttributes redirect, HttpServletRequest request) {
         if (result.hasErrors()) {
-            //do stuff here
-            //return new ModelAndView("user/register", "formErrors", result.getAllErrors());
+            return new ModelAndView("user/register", "formErrors", result.getAllErrors());
         }
+        if (userService.register(user)) {
+            return new ModelAndView("user/register-success");
+        } else {
+            return new ModelAndView("user/register", "formErrors", "User already exists");
+        }
+    }
 
-
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword( passwordEncoder.encode(user.getPassword()) );
-        
-        //todo..make sure user does not exist
-        this.userRepository.save(user);
-        
-        return user;
+    @RequestMapping("/user/delete")
+    public @ResponseBody Boolean delete(Long id) {
+        userService.delete(id);
+        return true;
+    }
+    
+    @RequestMapping("/user/get")
+    public @ResponseBody Iterable<User> get() {
+        return userRepository.findAll();
     }
 }

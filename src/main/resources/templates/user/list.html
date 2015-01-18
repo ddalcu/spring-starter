@@ -11,7 +11,7 @@
         USER LISTsasdas
         <ul>
         <li th:each="user : ${users}">
-            <span th:text="${user.name}"></span>
+            <span th:text="${user.name}"></span><a th:href="@{/user/delete(id=${user.id})}">Delete</a>
         </li>
         </ul>
     </div>
