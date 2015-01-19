@@ -1,31 +1,27 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-    layout:decorator="layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
 <head>
 <title>REGISTER</title>
 </head>
 <body>
-    <h1 layout:fragment="header">REGISTER</h1>
+
     <div layout:fragment="content">
-        <div class="content">
 
-            <h2>register with Username and Password</h2>
-            
-            <p th:if="${formErrors}" th:text="${formErrors}" class="alert"></p>
-            
-            <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
+        <h2>register with Username and Password</h2>
 
-            <form name="form" id="form" th:action="@{/user/register}" action="/user/register" method="POST">
-                <fieldset>
-                    <input type="text" name="email" value="" placeholder="email" />
-                    <input type="text" name="userName" value="" placeholder="name" />
-                    <input type="password" name="password" placeholder="Password" />
-                </fieldset>
-                <input type="submit" id="login" value="Register"
-                    class="btn btn-primary" />
-            </form>
-        </div>
+        <p th:if="${formErrors}" th:text="${formErrors}" class="alert"></p>
+
+        <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
+
+        <form name="form" id="form" th:action="@{/user/register}" action="/user/register" method="POST">
+            <fieldset>
+                <input type="text" name="email" value="" placeholder="email" />
+                <input type="text" name="userName" value="" placeholder="name" />
+                <input type="password" name="password" placeholder="Password" />
+            </fieldset>
+            <input type="submit" id="login" value="Register" class="btn btn-primary" />
+        </form>
+
     </div>
 </body>
 </html>

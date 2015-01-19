@@ -78,6 +78,8 @@ public class Application {
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
             .antMatchers("/user/register").permitAll()
+            .antMatchers("/img/**").permitAll()
+            .antMatchers("/font/**").permitAll()
             .anyRequest().fullyAuthenticated()
             .and()
                 .formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
