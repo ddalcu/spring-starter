@@ -2,17 +2,37 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
     layout:decorator="layout">
-    <head>
-        <title>USER LIST</title>
-    </head>
+<head>
+<title>USER LIST</title>
+</head>
 <body>
     <div layout:fragment="content">
-        USER LIST
-        <ul>
-        <li th:each="user : ${users}">
-            <span th:text="${user.userName}"></span><a th:href="@{/user/autologin(userName=${user.userName})}">Login As</a> | <a th:href="@{/user/delete(id=${user.id})}">Delete</a>
-        </li>
-        </ul>
+        <h1>USER LIST</h1>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Delete</th>
+                        <th>Login as</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.userName}">user</td>
+                        <td th:text="${user.email}">email</td>
+                        <td th:text="${user.firstName}">first name</td>
+                        <td th:text="${user.lastName}">last name</td>
+                        <td><a th:href="@{/user/delete(id=${user.id})}">Delete</a></td>
+                        <td><a th:href="@{/user/autologin(userName=${user.userName})}">Login As</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

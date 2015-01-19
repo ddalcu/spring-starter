@@ -4,24 +4,18 @@
 <title>REGISTER</title>
 </head>
 <body>
-
     <div layout:fragment="content">
+        <form class="form-signin" th:action="@{/user/register}" action="/user/register" method="post">
+            <h2 class="form-signin-heading">Please register</h2>
+            <p th:if="${formErrors}" th:text="${formErrors}" class="alert"></p>
+            <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
+            
+            <label for="inputEmail" class="sr-only">Email address</label> <input type="text" id="inputEmail" name="email" class="form-control top" placeholder="Email" required="required" autofocus="autofocus"/>
+            <label for="inputUser" class="sr-only">User name</label> <input type="text" id="inputUser" name="userName" class="form-control middle" placeholder="Username" required="required"/>
+            <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
 
-        <h2>register with Username and Password</h2>
-
-        <p th:if="${formErrors}" th:text="${formErrors}" class="alert"></p>
-
-        <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
-
-        <form name="form" id="form" th:action="@{/user/register}" action="/user/register" method="POST">
-            <fieldset>
-                <input type="text" name="email" value="" placeholder="email" />
-                <input type="text" name="userName" value="" placeholder="name" />
-                <input type="password" name="password" placeholder="Password" />
-            </fieldset>
-            <input type="submit" id="login" value="Register" class="btn btn-primary" />
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
         </form>
-
     </div>
 </body>
 </html>
