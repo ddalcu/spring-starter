@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Email;
+
 @Entity
 public class User {
     @GeneratedValue
@@ -13,15 +15,15 @@ public class User {
     private Long id;
     
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 3, max = 100, message = "Username must at least 3 characters.")
     private String userName;
     
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 3, max = 100, message = "Password must at least 3 characters.")
     private String password;
     
+    @Email(message = "Email address is not valid.")
     @NotNull
-    @Size(min = 1, max = 100)
     private String email;
     
     private String activation;

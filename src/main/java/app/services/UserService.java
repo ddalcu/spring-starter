@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +23,9 @@ import app.repositories.UserRepository;
 public class UserService implements UserDetailsService {
     @Value("${user.require-activation}")
     private Boolean requireActivation;
+    
+    @Value("${app.secret}")
+    private String applicationSecret;
     
     private UserRepository repo;
     
@@ -50,7 +52,7 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(username, password, auth);
     }
     
-    public Boolean autoLogin(String username) {
+    public void autoLogin(String username) {
         UserDetails userDetails = this.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken (userDetails, null, userDetails.getAuthorities());
         
@@ -58,24 +60,25 @@ public class UserService implements UserDetailsService {
         if(auth.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated(); 
     }
 
     public Boolean register(User user) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(encodeUserPassword(user.getPassword()));
 
-        if (this.repo.findByUserName(user.getUserName()) == null) {
+        if (this.repo.findByUserName(user.getUserName()) == null && this.repo.findByEmail(user.getEmail()) == null) {
             Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String activation = encoder.encodePassword(user.getUserName(), "Application.secret");
-            Application.log.debug("Setting user activation to-" + activation);
+            String activation = encoder.encodePassword(user.getUserName(), applicationSecret);
             user.setActivation(activation);
             this.repo.save(user);
             return true;
         }
 
         return false;
+    }
+    
+    public String encodeUserPassword(String password) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.encode(password);
     }
     
     public Boolean delete(Long id) {
@@ -89,6 +92,26 @@ public class UserService implements UserDetailsService {
         }
         User u = this.repo.findByActivation(activation);
         if(u!=null) {
+            u.setActivation("1");
+            this.repo.save(u);
+            return true;
+        }
+        return false;
+    }
+    
+    public String createResetPasswordToken(User user) {
+        Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+        String resetToken = encoder.encodePassword(user.getEmail(), applicationSecret);
+        
+        user.setActivation(resetToken);
+        this.repo.save(user);
+        return resetToken;
+    }
+    
+    public Boolean resetPassword(User user) {
+        User u = this.repo.findByUserName(user.getUserName());
+        if(u != null) {
+            u.setPassword(encodeUserPassword(user.getPassword()));
             u.setActivation("1");
             this.repo.save(u);
             return true;

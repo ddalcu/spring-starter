@@ -5,13 +5,21 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <form class="form-signin" th:action="@{/user/register}" action="/user/register" method="post">
+        <form class="form-signin" th:action="@{/user/register}" th:object="${user}" action="/user/register" method="post">
             <h2 class="form-signin-heading">Please register</h2>
-            <p th:if="${formErrors}" th:text="${formErrors}" class="alert"></p>
-            <p th:if="${formErrors}" th:each="error : ${formErrors}" th:text="${error.defaultMessage}" class="alert"></p>
+            
+            <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
+                <div th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">Username error</div>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+            </div>
             
             <label for="inputEmail" class="sr-only">Email address</label> <input type="text" id="inputEmail" name="email" class="form-control top" placeholder="Email" required="required" autofocus="autofocus"/>
+            
+            
             <label for="inputUser" class="sr-only">User name</label> <input type="text" id="inputUser" name="userName" class="form-control middle" placeholder="Username" required="required"/>
+            
+            
             <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>

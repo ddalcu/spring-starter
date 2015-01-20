@@ -1,20 +1,17 @@
 package app.controllers;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import app.models.User;
 import app.repositories.UserRepository;
@@ -47,43 +44,72 @@ public class UserController {
 
     @RequestMapping("/user/list")
     public ModelAndView list() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Logged in::" + authentication.getName());
         Iterable<User> users = this.userRepository.findAll();
         return new ModelAndView("user/list", "users", users);
     }
 
     @RequestMapping(value = "/user/register", method = RequestMethod.GET)
-    public String register() {
+    public String register(User user) {
         return "user/register";
     }
-
-    /*
-     * This method should be customized by you, do not use it in its current
-     * form, needs much improvement
-     */
+    
     @RequestMapping(value = "/user/register", method = RequestMethod.POST)
-    public ModelAndView register(@Valid User user, BindingResult result, RedirectAttributes redirect, HttpServletRequest request) {
+    public String registerPost(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
-            return new ModelAndView("user/register", "formErrors", result.getAllErrors());
+            return "user/register";
         }
         
         if (userService.register(user)) {
             MailService.sendMail(user.getEmail(), "Test", "You have registered");
             if(!requireActivation) {
                 userService.autoLogin(user.getUserName());
-                return new ModelAndView("redirect:/");
+                return "redirect:/";
             }
-            return new ModelAndView("user/register-success");
+            return "user/register-success";
         } else {
-            return new ModelAndView("user/register", "formErrors", "User already exists");
+            result.rejectValue("email", "error.alreadyExists", "This username or email already exists, please try to reset password instead.");
+            return "user/register";
         }
     }
     
-    @RequestMapping("/user/mail")
-    public @ResponseBody Boolean mail() {
-        MailService.sendMail("master@asus", "Test from spring", "This is a message");
-        return true;
+    @RequestMapping(value = "/user/reset-password")
+    public String resetPasswordEmail(User user) {
+        return "user/reset-password";
+    }
+    
+    @RequestMapping(value = "/user/reset-password", method = RequestMethod.POST)
+    public ModelAndView resetPasswordEmailPost(User user, BindingResult result) {
+        User u = userRepository.findByEmail(user.getEmail());
+        if(u == null) {
+            result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
+        } else {
+            String resetToken = userService.createResetPasswordToken(u);
+            MailService.sendResetPassword(user.getEmail(), resetToken);
+        }
+        return new ModelAndView("user/reset-password", "message", "check your email");
+    }
+
+    @RequestMapping(value = "/user/reset-password-change")
+    public String resetPasswordChange(User user, BindingResult result, Model model) {
+        User u = userRepository.findByActivation(user.getActivation());
+        if(user.getActivation().equals("1") || u == null) {
+            result.rejectValue("activation", "error.doesntExist", "We could not find this reset password request.");
+        } else {
+            model.addAttribute("userName", u.getUserName());
+        }
+        return "user/reset-password-change";
+    }
+    
+    @RequestMapping(value = "/user/reset-password-change", method = RequestMethod.POST)
+    public ModelAndView resetPasswordChangePost(User user, BindingResult result) {
+        Boolean isChanged = userService.resetPassword(user);
+        System.out.println("Was password changed::" + isChanged);
+        if(isChanged) {
+            userService.autoLogin(user.getUserName());
+            return new ModelAndView("redirect:/");
+        } else {
+            return new ModelAndView("user/reset-password-change", "error", "Password could not be changed");
+        }
     }
     
     @RequestMapping("/user/delete")
