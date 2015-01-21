@@ -110,7 +110,10 @@ footer {
     border-radius: 0;
 }
 .form-signin input.bottom {
-  margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.form-signin .btn-primary {
+    margin-top: 10px;
 }

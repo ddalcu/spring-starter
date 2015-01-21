@@ -2,17 +2,22 @@ Simple starter app for Spring MVC (using spring boot)
 
 I could not find any simple barebone starter apps that had a working authentication system, orm, and ready to go. 
 
-Every example out there is bloated with a lot of unnecessary loads of crap. Why cant there be just a simple example ?
+Every example out there is bloated with a lot of unnecessary code.
 
 To run, just clone it then..
 
-mvn install
-java -jar target/app-0.0.1-SNAPSHOT.jar   (or run Application.java within eclipse)
+    mvn install
+    java -jar target/app-0.0.1-SNAPSHOT.jar   (or run Application.java within eclipse)
 
 
 
+Uses thymeleaf for templating, I find this template engine very easy to use and outputs clean html with error checking.
+H2 or Mysql for DB, configure it via application.properties
 
 
-Uses thymeleaf for templating, i find this one very clean.
-Mysql for DB, configure it via application.properties
+TODO:
 
+* Setup logging
+* Setup proper emails
+* User edit capability
+* Remember me token

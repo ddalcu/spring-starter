@@ -6,12 +6,15 @@
 <body>
     <div layout:fragment="content">
 
-        <form class="form-signin" th:action="@{/login}" action="/login" method="post">
+        <form class="form-signin" th:action="@{/login}" th:object="${user}" action="/login" method="post">
             <h2 class="form-signin-heading">Please sign in</h2>
-            <p th:if="${param.logout}" class="alert">You have been logged out</p>
-            <p th:if="${param.error}" class="alert alert-error">There was an error, please try again</p>
-            <label for="inputEmail" class="sr-only">Email address</label> <input type="text" id="inputEmail" name="username" class="form-control top" placeholder="Username" required="required" autofocus="autofocus"/>
-            <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
+            
+            <div class="alert alert-danger" th:if="${param.error}">
+                Email or password is incorrect, please try again.
+            </div>
+            
+            <input type="text" id="inputEmail" name="username" class="form-control top" placeholder="Username or Email" required="required" autofocus="autofocus"/>
+            <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="_spring_security_remember_me"/> Remember me

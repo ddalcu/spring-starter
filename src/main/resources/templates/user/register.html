@@ -14,13 +14,9 @@
                 <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
             </div>
             
-            <label for="inputEmail" class="sr-only">Email address</label> <input type="text" id="inputEmail" name="email" class="form-control top" placeholder="Email" required="required" autofocus="autofocus"/>
-            
-            
-            <label for="inputUser" class="sr-only">User name</label> <input type="text" id="inputUser" name="userName" class="form-control middle" placeholder="Username" required="required"/>
-            
-            
-            <label for="inputPassword" class="sr-only">Password</label> <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
+            <input type="text" id="inputEmail" name="email" class="form-control top" placeholder="Email" required="required" autofocus="autofocus"/>
+            <input type="text" id="inputUser" name="userName" class="form-control middle" placeholder="Username" required="required"/>
+            <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
         </form>

@@ -2,6 +2,8 @@ package app.controllers;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,8 @@ import app.services.UserService;
 @Controller
 // @RequestMapping("/user/*")
 public class UserController {
+    private Logger log = LoggerFactory.getLogger(UserController.class);
+    
     @Value("${user.require-activation}")
     private Boolean requireActivation;
     
@@ -38,7 +42,7 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    public String login() {
+    public String login(User user) {
         return "user/login";
     }
 
@@ -59,14 +63,16 @@ public class UserController {
             return "user/register";
         }
         
-        if (userService.register(user)) {
-            MailService.sendMail(user.getEmail(), "Test", "You have registered");
+        User registeredUser = userService.register(user);
+        if (registeredUser != null) {
+            MailService.sendNewRegistration(user.getEmail(), registeredUser.getActivation());
             if(!requireActivation) {
                 userService.autoLogin(user.getUserName());
                 return "redirect:/";
             }
             return "user/register-success";
         } else {
+            log.error("User already exists: " + user.getUserName());
             result.rejectValue("email", "error.alreadyExists", "This username or email already exists, please try to reset password instead.");
             return "user/register";
         }
@@ -103,7 +109,6 @@ public class UserController {
     @RequestMapping(value = "/user/reset-password-change", method = RequestMethod.POST)
     public ModelAndView resetPasswordChangePost(User user, BindingResult result) {
         Boolean isChanged = userService.resetPassword(user);
-        System.out.println("Was password changed::" + isChanged);
         if(isChanged) {
             userService.autoLogin(user.getUserName());
             return new ModelAndView("redirect:/");

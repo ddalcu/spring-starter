@@ -37,8 +37,12 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repo.findByUserName(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
+        
+        if(user == null) {
+            user = repo.findByEmail(username);
+            if(user == null) {
+                throw new UsernameNotFoundException(username);
+            }
         }
         if(requireActivation && !user.getActivation().equals("1")) {
             Application.log.debug("User [" + username + "] tried to login but is not activated");
@@ -62,7 +66,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public Boolean register(User user) {
+    public User register(User user) {
         user.setPassword(encodeUserPassword(user.getPassword()));
 
         if (this.repo.findByUserName(user.getUserName()) == null && this.repo.findByEmail(user.getEmail()) == null) {
@@ -70,10 +74,10 @@ public class UserService implements UserDetailsService {
             String activation = encoder.encodePassword(user.getUserName(), applicationSecret);
             user.setActivation(activation);
             this.repo.save(user);
-            return true;
+            return user;
         }
 
-        return false;
+        return null;
     }
     
     public String encodeUserPassword(String password) {

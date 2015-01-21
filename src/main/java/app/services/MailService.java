@@ -21,9 +21,15 @@ public class MailService {
         }
     }
     
-    public static void sendResetPassword(String to, String link) {
+    public static void sendResetPassword(String to, String activation) {
         String subject = "Reset Password";
-        String text = "Please click the following link to reset your password: " + link;
+        String text = "Please click the following link to reset your password: " + activation;
+        sendMail(to, subject, text);
+    }
+    
+    public static void sendNewRegistration(String to, String activation) {
+        String subject = "Welcome to our website";
+        String text = "Please click the following link to verify your email address: " + activation;
         sendMail(to, subject, text);
     }
 }
