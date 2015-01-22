@@ -1,5 +1,7 @@
 package app.controllers;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -68,7 +70,7 @@ public class UserController {
         
         User registeredUser = userService.register(user);
         if (registeredUser != null) {
-           mailService.sendNewRegistration(user.getEmail(), registeredUser.getActivation());
+           mailService.sendNewRegistration(user.getEmail(), registeredUser.getToken());
             if(!requireActivation) {
                 userService.autoLogin(user.getUserName());
                 return "redirect:/";
@@ -92,7 +94,7 @@ public class UserController {
         if(u == null) {
             result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
         } else {
-            String resetToken = userService.createResetPasswordToken(u);
+            String resetToken = userService.createResetPasswordToken(u, true);
             mailService.sendResetPassword(user.getEmail(), resetToken);
         }
         return new ModelAndView("user/reset-password", "message", "check your email");
@@ -100,8 +102,8 @@ public class UserController {
 
     @RequestMapping(value = "/user/reset-password-change")
     public String resetPasswordChange(User user, BindingResult result, Model model) {
-        User u = userRepository.findByActivation(user.getActivation());
-        if(user.getActivation().equals("1") || u == null) {
+        User u = userRepository.findByToken(user.getToken());
+        if(user.getToken().equals("1") || u == null) {
             result.rejectValue("activation", "error.doesntExist", "We could not find this reset password request.");
         } else {
             model.addAttribute("userName", u.getUserName());
@@ -118,6 +120,16 @@ public class UserController {
         } else {
             return new ModelAndView("user/reset-password-change", "error", "Password could not be changed");
         }
+    }
+    
+    @RequestMapping("/user/activation-send")
+    public ModelAndView activationSend(User user) {
+        return new ModelAndView("/user/activation-send");
+    }
+    
+    @RequestMapping(value = "/user/activation-send", method = RequestMethod.POST)
+    public ModelAndView activationSendPost(User user) {
+        return new ModelAndView("/user/activation-sent");
     }
     
     @RequestMapping("/user/delete")
@@ -145,5 +157,22 @@ public class UserController {
     public String autoLogin(User user) {
         userService.autoLogin(user.getUserName());
         return "redirect:/";
+    }
+    
+    @RequestMapping("/user/edit")
+    public String edit(User user, Principal principal) {
+        User u = userRepository.findByUserName(principal.getName());
+        user.setAddress(u.getAddress());
+        user.setCompanyName(u.getCompanyName());
+        user.setEmail(u.getEmail());
+        user.setFirstName(u.getFirstName());
+        user.setLastName(u.getLastName());
+        return "/user/edit";
+    }
+    
+    @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
+    public String editPost(User user, Principal principal) {
+        userService.updateUser(user, principal.getName());
+        return "redirect:/user/edit";
     }
 }

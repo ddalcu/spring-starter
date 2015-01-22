@@ -26,7 +26,7 @@ public class User {
     @NotNull
     private String email;
     
-    private String activation;
+    private String token;
     
     private String role = "ROLE_USER";
     
@@ -59,12 +59,12 @@ public class User {
         this.password = password;
     }
 
-    public String getActivation() {
-        return activation;
+    public String getToken() {
+        return token;
     }
 
-    public void setActivation(String activation) {
-        this.activation = activation;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getEmail() {

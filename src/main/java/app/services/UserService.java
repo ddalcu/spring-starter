@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService {
                 throw new UsernameNotFoundException(username);
             }
         }
-        if(requireActivation && !user.getActivation().equals("1")) {
+        if(requireActivation && !user.getToken().equals("1")) {
             Application.log.debug("User [" + username + "] tried to login but is not activated");
             throw new UsernameNotFoundException(username);
         }
@@ -74,15 +74,15 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodeUserPassword(user.getPassword()));
 
         if (this.repo.findByUserName(user.getUserName()) == null && this.repo.findByEmail(user.getEmail()) == null) {
-            Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-            String activation = encoder.encodePassword(user.getUserName(), applicationSecret);
-            user.setActivation(activation);
+            String activation = createActivationToken(user, false);
+            user.setToken(activation);
             this.repo.save(user);
             return user;
         }
 
         return null;
     }
+    
     
     public String encodeUserPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -98,21 +98,32 @@ public class UserService implements UserDetailsService {
         if(activation.equals("1") || activation.length()<5) {
             return null;
         }
-        User u = this.repo.findByActivation(activation);
+        User u = this.repo.findByToken(activation);
         if(u!=null) {
-            u.setActivation("1");
+            u.setToken("1");
             this.repo.save(u);
             return u;
         }
         return null;
     }
     
-    public String createResetPasswordToken(User user) {
+    public String createActivationToken(User user, Boolean save) {
+        Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+        String activationToken = encoder.encodePassword(user.getUserName(), applicationSecret);
+        if(save) {
+            user.setToken(activationToken);
+            this.repo.save(user);
+        }
+        return activationToken;
+    }
+    
+    public String createResetPasswordToken(User user, Boolean save) {
         Md5PasswordEncoder encoder = new Md5PasswordEncoder();
         String resetToken = encoder.encodePassword(user.getEmail(), applicationSecret);
-        
-        user.setActivation(resetToken);
-        this.repo.save(user);
+        if(save) {
+            user.setToken(resetToken);
+            this.repo.save(user);
+        }
         return resetToken;
     }
     
@@ -120,10 +131,20 @@ public class UserService implements UserDetailsService {
         User u = this.repo.findByUserName(user.getUserName());
         if(u != null) {
             u.setPassword(encodeUserPassword(user.getPassword()));
-            u.setActivation("1");
+            u.setToken("1");
             this.repo.save(u);
             return true;
         }
         return false;
+    }
+
+    public void updateUser(User user, String username) {
+        User u = this.repo.findByUserName(username);
+        u.setAddress(user.getAddress());
+        u.setCompanyName(user.getCompanyName());
+        u.setEmail(user.getEmail());
+        u.setFirstName(user.getFirstName());
+        u.setLastName(user.getLastName());
+        this.repo.save(u);
     }
 }

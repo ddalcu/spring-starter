@@ -18,6 +18,7 @@ H2 or Mysql for DB, configure it via application.properties
 TODO:
 
 * Setup logging
-* Setup proper emails
-* User edit capability
+* User edit capability via user list
 * Remember me token
+* Secure app url's
+* Password reset - email sent message
