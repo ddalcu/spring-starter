@@ -14,15 +14,13 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class MvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        System.out.println("=============ADDING INTERCEPTOR================");
         registry.addInterceptor(new ApplicationInterceptor());
     }
     
     class ApplicationInterceptor extends HandlerInterceptorAdapter {
-        
         @Override
         public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-            if(modelAndView != null) {
+            if(modelAndView != null && !modelAndView.getViewName().contains("error")) {
                 String username = SecurityContextHolder.getContext().getAuthentication().getName();
                 modelAndView.addObject("global_username", username);
             }

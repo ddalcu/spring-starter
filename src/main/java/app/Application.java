@@ -58,8 +58,6 @@ public class Application {
         return "index";
     }
     
-
-    
     @Bean
     public ApplicationSecurity applicationSecurity() {
         return new ApplicationSecurity();
@@ -78,6 +76,7 @@ public class Application {
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
             .antMatchers("/user/register").permitAll()
+            .antMatchers("/user/activate").permitAll()
             .antMatchers("/user/reset-password").permitAll()
             .antMatchers("/user/reset-password-change").permitAll()
             .antMatchers("/img/**").permitAll()

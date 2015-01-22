@@ -132,8 +132,13 @@ public class UserController {
     }
     
     @RequestMapping("/user/activate")
-    public @ResponseBody Boolean activate(String activation) {
-        return userService.activate(activation);
+    public String activate(String activation) {
+        User u = userService.activate(activation);
+        if(u != null) {
+            userService.autoLogin(u);
+            return "redirect:/";
+        }
+        return "redirect:/error?message=Could not activate with this activation code, please contact support";
     }
     
     @RequestMapping("/user/autologin")

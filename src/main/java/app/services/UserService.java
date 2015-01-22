@@ -56,6 +56,10 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(username, password, auth);
     }
     
+    public void autoLogin(User user) {
+        autoLogin(user.getUserName());
+    }
+    
     public void autoLogin(String username) {
         UserDetails userDetails = this.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken (userDetails, null, userDetails.getAuthorities());
@@ -90,17 +94,17 @@ public class UserService implements UserDetailsService {
         return true;
     }
     
-    public Boolean activate(String activation) {
+    public User activate(String activation) {
         if(activation.equals("1") || activation.length()<5) {
-            return false;
+            return null;
         }
         User u = this.repo.findByActivation(activation);
         if(u!=null) {
             u.setActivation("1");
             this.repo.save(u);
-            return true;
+            return u;
         }
-        return false;
+        return null;
     }
     
     public String createResetPasswordToken(User user) {
