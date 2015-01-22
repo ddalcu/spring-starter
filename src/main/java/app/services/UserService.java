@@ -21,7 +21,7 @@ import app.repositories.UserRepository;
 
 @Service
 public class UserService implements UserDetailsService {
-    @Value("${user.require-activation}")
+    @Value("${app.user.verification}")
     private Boolean requireActivation;
     
     @Value("${app.secret}")

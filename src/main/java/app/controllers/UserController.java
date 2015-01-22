@@ -35,6 +35,9 @@ public class UserController {
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MailService mailService;
     
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -65,7 +68,7 @@ public class UserController {
         
         User registeredUser = userService.register(user);
         if (registeredUser != null) {
-            MailService.sendNewRegistration(user.getEmail(), registeredUser.getActivation());
+           mailService.sendNewRegistration(user.getEmail(), registeredUser.getActivation());
             if(!requireActivation) {
                 userService.autoLogin(user.getUserName());
                 return "redirect:/";
@@ -90,7 +93,7 @@ public class UserController {
             result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
         } else {
             String resetToken = userService.createResetPasswordToken(u);
-            MailService.sendResetPassword(user.getEmail(), resetToken);
+            mailService.sendResetPassword(user.getEmail(), resetToken);
         }
         return new ModelAndView("user/reset-password", "message", "check your email");
     }
