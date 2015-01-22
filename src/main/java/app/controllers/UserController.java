@@ -25,7 +25,7 @@ import app.services.UserService;
 public class UserController {
     private Logger log = LoggerFactory.getLogger(UserController.class);
     
-    @Value("${user.require-activation}")
+    @Value("${app.user.verification}")
     private Boolean requireActivation;
     
     private final UserRepository userRepository;
