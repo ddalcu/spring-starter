@@ -77,6 +77,7 @@ public class Application {
             http.authorizeRequests()
             .antMatchers("/user/register").permitAll()
             .antMatchers("/user/activate").permitAll()
+            .antMatchers("/user/activation-send").permitAll()
             .antMatchers("/user/reset-password").permitAll()
             .antMatchers("/user/reset-password-change").permitAll()
             .antMatchers("/img/**").permitAll()

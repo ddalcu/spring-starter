@@ -40,8 +40,12 @@ public class MailService {
     
     public void sendNewRegistration(String to, String token) {
         String url = appUrl + "/user/activate?activation=" + token;
-        String subject = "Welcome to our website";
-        String text = "Please click the following link to verify your email address: " + url;
+        String subject = "Please activate your account";
+        String text = "Please click the following link to activate your account: " + url;
         sendMail(to, subject, text);
+    }
+    
+    public void sendNewActivationRequest(String to, String token) {
+        sendNewRegistration(to, token);
     }
 }

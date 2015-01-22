@@ -128,8 +128,15 @@ public class UserController {
     }
     
     @RequestMapping(value = "/user/activation-send", method = RequestMethod.POST)
-    public ModelAndView activationSendPost(User user) {
-        return new ModelAndView("/user/activation-sent");
+    public ModelAndView activationSendPost(User user, BindingResult result) {
+        User u = userService.resetActivation(user.getEmail());
+        if(u != null) {
+            mailService.sendNewActivationRequest(u.getEmail(), u.getToken());
+            return new ModelAndView("/user/activation-sent");
+        } else {
+            result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
+            return new ModelAndView("/user/activation-send");
+        }
     }
     
     @RequestMapping("/user/delete")
