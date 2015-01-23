@@ -30,7 +30,8 @@ public class UserController {
     @Value("${app.user.verification}")
     private Boolean requireActivation;
     
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     protected AuthenticationManager authenticationManager;
@@ -40,11 +41,6 @@ public class UserController {
 
     @Autowired
     private MailService mailService;
-    
-    @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @RequestMapping("/login")
     public String login(User user) {
@@ -90,7 +86,7 @@ public class UserController {
     
     @RequestMapping(value = "/user/reset-password", method = RequestMethod.POST)
     public ModelAndView resetPasswordEmailPost(User user, BindingResult result) {
-        User u = userRepository.findByEmail(user.getEmail());
+        User u = userRepository.findOneByEmail(user.getEmail());
         if(u == null) {
             result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
         } else {
@@ -102,7 +98,7 @@ public class UserController {
 
     @RequestMapping(value = "/user/reset-password-change")
     public String resetPasswordChange(User user, BindingResult result, Model model) {
-        User u = userRepository.findByToken(user.getToken());
+        User u = userRepository.findOneByToken(user.getToken());
         if(user.getToken().equals("1") || u == null) {
             result.rejectValue("activation", "error.doesntExist", "We could not find this reset password request.");
         } else {
@@ -168,7 +164,7 @@ public class UserController {
     
     @RequestMapping("/user/edit")
     public String edit(User user, Principal principal) {
-        User u = userRepository.findByUserName(principal.getName());
+        User u = userRepository.findOneByUserName(principal.getName());
         user.setAddress(u.getAddress());
         user.setCompanyName(u.getCompanyName());
         user.setEmail(u.getEmail());

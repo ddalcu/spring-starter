@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -72,6 +73,9 @@ public class Application {
         @Autowired
         private UserService userService;
         
+        @Value("${app.secret}")
+        private String applicationSecret;
+        
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests()
@@ -82,13 +86,13 @@ public class Application {
             .antMatchers("/user/reset-password-change").permitAll()
             .antMatchers("/img/**").permitAll()
             .antMatchers("/font/**").permitAll()
-            .anyRequest().fullyAuthenticated()
+            .anyRequest().authenticated()
             .and()
                 .formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
             .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login")
             .and()
-                .rememberMe()
+                .rememberMe().key(applicationSecret)
                 .tokenValiditySeconds(31536000);
         }
         

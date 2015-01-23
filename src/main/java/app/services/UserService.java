@@ -36,10 +36,10 @@ public class UserService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByUserName(username);
+        User user = repo.findOneByUserName(username);
         
         if(user == null) {
-            user = repo.findByEmail(username);
+            user = repo.findOneByEmail(username);
             if(user == null) {
                 throw new UsernameNotFoundException(username);
             }
@@ -73,7 +73,7 @@ public class UserService implements UserDetailsService {
     public User register(User user) {
         user.setPassword(encodeUserPassword(user.getPassword()));
 
-        if (this.repo.findByUserName(user.getUserName()) == null && this.repo.findByEmail(user.getEmail()) == null) {
+        if (this.repo.findOneByUserName(user.getUserName()) == null && this.repo.findOneByEmail(user.getEmail()) == null) {
             String activation = createActivationToken(user, false);
             user.setToken(activation);
             this.repo.save(user);
@@ -98,7 +98,7 @@ public class UserService implements UserDetailsService {
         if(activation.equals("1") || activation.length()<5) {
             return null;
         }
-        User u = this.repo.findByToken(activation);
+        User u = this.repo.findOneByToken(activation);
         if(u!=null) {
             u.setToken("1");
             this.repo.save(u);
@@ -128,7 +128,7 @@ public class UserService implements UserDetailsService {
     }
     
     public User resetActivation(String email) {
-        User u = this.repo.findByEmail(email);
+        User u = this.repo.findOneByEmail(email);
         if(u != null) {
             createActivationToken(u, true);
             return u;
@@ -137,7 +137,7 @@ public class UserService implements UserDetailsService {
     }
     
     public Boolean resetPassword(User user) {
-        User u = this.repo.findByUserName(user.getUserName());
+        User u = this.repo.findOneByUserName(user.getUserName());
         if(u != null) {
             u.setPassword(encodeUserPassword(user.getPassword()));
             u.setToken("1");
@@ -148,7 +148,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateUser(User user, String username) {
-        User u = this.repo.findByUserName(username);
+        User u = this.repo.findOneByUserName(username);
         u.setAddress(user.getAddress());
         u.setCompanyName(user.getCompanyName());
         u.setEmail(user.getEmail());
