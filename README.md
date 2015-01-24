@@ -17,6 +17,4 @@ H2 or Mysql for DB, configure it via application.properties
 
 TODO:
 
-* Setup logging
-* Password reset - email sent message
 * Make activation and password reset code uniform, urls, views and java code

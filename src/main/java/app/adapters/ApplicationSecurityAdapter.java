@@ -33,6 +33,8 @@ public class ApplicationSecurityAdapter extends WebSecurityConfigurerAdapter {
         .antMatchers("/user/activation-send").permitAll()
         .antMatchers("/user/reset-password").permitAll()
         .antMatchers("/user/reset-password-change").permitAll()
+        .antMatchers("/user/autologin").access("hasRole('ROLE_ADMIN')")
+        .antMatchers("/user/delete").access("hasRole('ROLE_ADMIN')")
         .antMatchers("/img/**").permitAll()
         .antMatchers("/images/**").permitAll()
         .antMatchers("/fonts/**").permitAll()

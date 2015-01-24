@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import app.models.User;
@@ -86,15 +85,16 @@ public class UserController {
     }
     
     @RequestMapping(value = "/user/reset-password", method = RequestMethod.POST)
-    public ModelAndView resetPasswordEmailPost(User user, BindingResult result) {
+    public String resetPasswordEmailPost(User user, BindingResult result) {
         User u = userRepository.findOneByEmail(user.getEmail());
         if(u == null) {
             result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
+            return "user/reset-password";
         } else {
             String resetToken = userService.createResetPasswordToken(u, true);
             mailService.sendResetPassword(user.getEmail(), resetToken);
         }
-        return new ModelAndView("user/reset-password", "message", "check your email");
+        return "user/reset-password-sent";
     }
 
     @RequestMapping(value = "/user/reset-password-change")
@@ -137,9 +137,9 @@ public class UserController {
     }
     
     @RequestMapping("/user/delete")
-    public @ResponseBody Boolean delete(Long id) {
+    public String delete(Long id) {
         userService.delete(id);
-        return true;
+        return "redirect:/user/list";
     }
     
     @RequestMapping("/user/activate")

@@ -10,9 +10,8 @@
             <h2 class="form-signin-heading">Please sign in</h2>
             
             <div class="alert alert-danger" th:if="${param.error}">
-                Email or password is incorrect, please try again.
+                Email and password is incorrect or your account is not activated, please try again.
             </div>
-            
             <input type="text" id="inputEmail" name="username" class="form-control top" placeholder="Username or Email" required="required" autofocus="autofocus"/>
             <input type="password" id="inputPassword" name="password" class="form-control bottom" placeholder="Password" required="required"/>
             <div class="checkbox">

@@ -22,6 +22,7 @@
             
             <p class="alert alert-success" th:if="${#httpServletRequest.getParameter('updated')}">You changes have been saved</p>
         </form>
+        <a th:href="@{/user/reset-password}">Change Password</a>
     </div>
 </body>
 </html>
