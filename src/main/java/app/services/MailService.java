@@ -1,10 +1,14 @@
 package app.services;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+
+import app.models.User;
 
 @Service
 public class MailService {
@@ -13,6 +17,9 @@ public class MailService {
     
     @Value("${app.url}")
     private String appUrl;
+
+    @Value("${app.email.support}")
+    private String supportEmail;
     
     @Autowired 
     private MailSender mailSender;
@@ -47,5 +54,11 @@ public class MailService {
     
     public void sendNewActivationRequest(String to, String token) {
         sendNewRegistration(to, token);
+    }
+    
+    public void sendErrorEmail(Exception e, HttpServletRequest req, User user) {
+        String subject = "Application Error: " + req.getRequestURL();
+        String text = "An error occured in your application: " + e + "\r\nFor User:  " + user.getEmail();
+        sendMail(supportEmail, subject, text);
     }
 }

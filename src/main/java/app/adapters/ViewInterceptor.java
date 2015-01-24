@@ -11,12 +11,14 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import app.services.UserService;
 
 @Configuration
-public class ViewInterceptorAdapter extends HandlerInterceptorAdapter {
+public class ViewInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     UserService userService;
     
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-       modelAndView.addObject("g_user", userService.getLoggedInUser());
+        if(modelAndView != null && !modelAndView.getViewName().contains("error")) {
+            modelAndView.addObject("g_user", userService.getLoggedInUser());
+        }
     }
 }
