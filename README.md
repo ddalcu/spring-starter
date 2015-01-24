@@ -18,7 +18,5 @@ H2 or Mysql for DB, configure it via application.properties
 TODO:
 
 * Setup logging
-* User edit capability via user list
-* Secure app url's
 * Password reset - email sent message
 * Make activation and password reset code uniform, urls, views and java code

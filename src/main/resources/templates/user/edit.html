@@ -8,23 +8,13 @@
         <form class="form-signin" th:action="@{/user/edit}" th:object="${user}" method="post">
             <h2 class="form-signin-heading">Edit <span th:text="${user.userName}"></span> account</h2>
             
-            <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
-                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
-                <div th:if="${#fields.hasErrors('address')}" th:errors="*{address}">address error</div>
-                <div th:if="${#fields.hasErrors('companyName')}" th:errors="*{companyName}">companyName error</div>
-                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">firstName error</div>
-                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">lastName error</div>
-            </div>
-            
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert alert-danger">Email error</div>
+
             <input type="text" th:field="*{email}" class="form-control top" placeholder="Email" required="required" autofocus="autofocus"/>
             <input type="text" th:field="*{address}" class="form-control middle" placeholder="Address"/>
             <input type="text" th:field="*{companyName}" class="form-control middle" placeholder="Company Name"/>
             <input type="text" th:field="*{firstName}" class="form-control middle" placeholder="First Name"/>
             <input type="text" th:field="*{lastName}" class="form-control bottom" placeholder="Last Name"/>
-            
-            <input type="text" th:field="*{password}" class="form-control bottom" placeholder="New Password, leave blank if you dont want to change it"/>
-            <input type="text" th:field="*{confirmPassword}" class="form-control bottom" placeholder="Confirm New Password"/>
-            
             <input type="hidden" th:field="*{userName}"/>
             <input type="hidden" th:field="*{id}"/>
             

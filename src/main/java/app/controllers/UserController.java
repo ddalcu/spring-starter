@@ -180,35 +180,22 @@ public class UserController {
         user.setEmail(u.getEmail());
         user.setFirstName(u.getFirstName());
         user.setLastName(u.getLastName());
+        
         return "/user/edit";
     }
     
     @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
     public String editPost(@Valid User user, BindingResult result) {
-        if (result.hasErrors()) {
+        if (result.hasFieldErrors("email")) {
             return "/user/edit";
         }
-        if(user.getPassword().length() > 0) {
-            if(!user.isMatchingPasswords()) {
-                result.rejectValue("confirmPassword", "Passwords must match");
-                return "/user/edit";
-            }
-        }
+        
         if(userService.getLoggedInUser().isAdmin()) {
             userService.updateUser(user);
         } else {
             userService.updateUser(userService.getLoggedInUser().getUserName(), user);
         }
         
-        return "/user/edit";
-    }
-    
-    @RequestMapping(value = "/user/show", method = RequestMethod.GET)
-    public @ResponseBody User show() {
-        User u = userService.getLoggedInUser();
-        String name = u.getUserName(); //get logged in username
-        System.out.println(name);
-
-        return u;
+        return "redirect:/user/edit/" + user.getId() + "?updated";
     }
 }
