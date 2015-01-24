@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -141,11 +142,6 @@ public class UserController {
         return true;
     }
     
-    @RequestMapping("/user/get")
-    public @ResponseBody Iterable<User> get() {
-        return userRepository.findAll();
-    }
-    
     @RequestMapping("/user/activate")
     public String activate(String activation) {
         User u = userService.activate(activation);
@@ -161,10 +157,17 @@ public class UserController {
         userService.autoLogin(user.getUserName());
         return "redirect:/";
     }
+
     
-    @RequestMapping("/user/edit")
-    public String edit(User user, Principal principal) {
-        User u = userRepository.findOneByUserName(principal.getName());
+    @RequestMapping("/user/edit/{id}")
+    public String edit(@PathVariable("id") Long id, User user, Principal principal) {
+        User u;
+        if(id == null || id == 0 ) {
+            u = userRepository.findOneByUserName(principal.getName());
+        } else {
+            u = userRepository.findOne(id);
+        }
+        user.setUserName(u.getUserName());
         user.setAddress(u.getAddress());
         user.setCompanyName(u.getCompanyName());
         user.setEmail(u.getEmail());
@@ -174,8 +177,22 @@ public class UserController {
     }
     
     @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
-    public String editPost(User user, Principal principal) {
-        userService.updateUser(user, principal.getName());
-        return "redirect:/user/edit";
+    public String editPost(User user) {
+        if(userService.getLoggedInUser().isAdmin()) {
+            userService.updateUser(user);
+        } else {
+            userService.updateUser(userService.getLoggedInUser().getUserName(), user);
+        }
+
+        return "redirect:/user/edit/0";
+    }
+    
+    @RequestMapping(value = "/user/show", method = RequestMethod.GET)
+    public @ResponseBody User show() {
+        User u = userService.getLoggedInUser();
+        String name = u.getUserName(); //get logged in username
+        System.out.println(name);
+
+        return u;
     }
 }

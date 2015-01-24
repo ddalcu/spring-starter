@@ -82,6 +82,10 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+    
+    public Boolean isAdmin() {
+        return this.role.equals("ROLE_ADMIN");
+    }
 
     public String getFirstName() {
         return firstName;

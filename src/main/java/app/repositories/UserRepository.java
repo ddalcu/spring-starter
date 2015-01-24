@@ -1,7 +1,11 @@
 package app.repositories;
 
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import app.models.User;
 
@@ -9,5 +13,19 @@ import app.models.User;
 public interface UserRepository extends CrudRepository<User, Long> {
     User findOneByUserName(String name);
     User findOneByEmail(String email);
+    User findOneByUserNameOrEmail(String username, String email);
     User findOneByToken(String token);
+    
+    @Modifying
+    @Transactional
+    @Query("update User u set u.email = :email, u.firstName = :firstName, "
+            + "u.lastName = :lastName, u.address = :address, u.companyName = :companyName "
+            + "where u.userName = :userName")
+    int updateUser(
+            @Param("userName") String userName, 
+            @Param("email") String email,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("address") String address,
+            @Param("companyName") String companyName);
 }

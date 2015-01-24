@@ -2,6 +2,8 @@ package app.services;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,33 +29,29 @@ public class UserService implements UserDetailsService {
     @Value("${app.secret}")
     private String applicationSecret;
     
+    @Autowired
     private UserRepository repo;
     
     @Autowired
-    public UserService(UserRepository repo) {
-        this.repo = repo;
-    }
+    private HttpSession httpSession;
+    
+    public final String CURRENT_USER_KEY = "CURRENT_USER";
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findOneByUserName(username);
+        User user = repo.findOneByUserNameOrEmail(username, username);
         
         if(user == null) {
-            user = repo.findOneByEmail(username);
-            if(user == null) {
-                throw new UsernameNotFoundException(username);
-            }
+            throw new UsernameNotFoundException(username);
         }
         if(requireActivation && !user.getToken().equals("1")) {
             Application.log.debug("User [" + username + "] tried to login but is not activated");
             throw new UsernameNotFoundException(username);
         }
-        
+        httpSession.setAttribute(CURRENT_USER_KEY, user);
         List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole());
-
-        String password = user.getPassword();
-
-        return new org.springframework.security.core.userdetails.User(username, password, auth);
+        
+        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), auth);
     }
     
     public void autoLogin(User user) {
@@ -146,14 +144,28 @@ public class UserService implements UserDetailsService {
         }
         return false;
     }
-
-    public void updateUser(User user, String username) {
-        User u = this.repo.findOneByUserName(username);
-        u.setAddress(user.getAddress());
-        u.setCompanyName(user.getCompanyName());
-        u.setEmail(user.getEmail());
-        u.setFirstName(user.getFirstName());
-        u.setLastName(user.getLastName());
-        this.repo.save(u);
+    
+    public void updateUser(User user) {
+        updateUser(user.getUserName(), user);
+    }
+    
+    public void updateUser(String userName, User newData) {
+        this.repo.updateUser(
+                userName, 
+                newData.getEmail(), 
+                newData.getFirstName(), 
+                newData.getLastName(), 
+                newData.getAddress(), 
+                newData.getCompanyName());
+    }
+    
+    public User getLoggedInUser() {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = (User) httpSession.getAttribute(CURRENT_USER_KEY);
+        if(httpSession.getAttribute(CURRENT_USER_KEY) == null) {
+            user = this.repo.findOneByUserName(userName);
+            httpSession.setAttribute(CURRENT_USER_KEY, user);
+        }
+        return user;
     }
 }

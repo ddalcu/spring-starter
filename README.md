@@ -19,7 +19,6 @@ TODO:
 
 * Setup logging
 * User edit capability via user list
-* Remember me token
 * Secure app url's
 * Password reset - email sent message
 * Make activation and password reset code uniform, urls, views and java code
