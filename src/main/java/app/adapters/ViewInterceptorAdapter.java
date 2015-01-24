@@ -11,7 +11,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import app.services.UserService;
 
 @Configuration
-public class ViewInterceptor extends HandlerInterceptorAdapter {
+public class ViewInterceptorAdapter extends HandlerInterceptorAdapter {
     @Autowired
     UserService userService;
     
