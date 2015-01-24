@@ -37,7 +37,8 @@ public class User {
     private String address;
     
     private String companyName;
-
+    
+    private String lastLogin;
     
     public Long getId() {
         return id;
@@ -117,5 +118,13 @@ public class User {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }

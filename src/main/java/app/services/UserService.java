@@ -168,4 +168,8 @@ public class UserService implements UserDetailsService {
         }
         return user;
     }
+    
+    public void updateLastLogin(String userName) {
+        this.repo.updateLastLogin(userName);
+    }
 }

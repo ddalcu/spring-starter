@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,9 +50,11 @@ public class UserController {
     }
 
     @RequestMapping("/user/list")
-    public ModelAndView list() {
+    public String list(ModelMap map) {
         Iterable<User> users = this.userRepository.findAll();
-        return new ModelAndView("user/list", "users", users);
+        map.addAttribute("users", users);
+        map.addAttribute("g_user", userService.getLoggedInUser());
+        return "user/list";
     }
 
     @RequestMapping(value = "/user/register", method = RequestMethod.GET)

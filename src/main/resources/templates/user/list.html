@@ -17,9 +17,9 @@
                         <th>Email</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Delete</th>
-                        <th>Edit</th>
-                        <th>Login as</th>
+                        <th th:if="${g_user.isAdmin()}">Delete</th>
+                        <th th:if="${g_user.isAdmin()}">Edit</th>
+                        <th th:if="${g_user.isAdmin()}">Login as</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,9 +28,9 @@
                         <td th:text="${user.email}">email</td>
                         <td th:text="${user.firstName}">first name</td>
                         <td th:text="${user.lastName}">last name</td>
-                        <td><a th:href="@{/user/delete(id=${user.id})}">Delete</a></td>
-                        <td><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>
-                        <td><a th:href="@{/user/autologin(userName=${user.userName})}">Login As</a></td>
+                        <td th:if="${g_user.isAdmin()}"><a th:href="@{/user/delete(id=${user.id})}">Delete</a></td>
+                        <td th:if="${g_user.isAdmin()}"><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>
+                        <td th:if="${g_user.isAdmin()}"><a th:href="@{/user/autologin(userName=${user.userName})}">Login As</a></td>
                     </tr>
                 </tbody>
             </table>

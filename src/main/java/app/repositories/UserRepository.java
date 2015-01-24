@@ -28,4 +28,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
             @Param("lastName") String lastName,
             @Param("address") String address,
             @Param("companyName") String companyName);
+    
+    @Modifying
+    @Transactional
+    @Query("update User u set u.lastLogin = CURRENT_TIMESTAMP where u.userName = ?1")
+    int updateLastLogin(String userName);
 }
