@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
         }
         if(requireActivation && !user.getToken().equals("1")) {
             Application.log.debug("User [" + username + "] tried to login but is not activated");
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException(username + " has not been activated yet");
         }
         httpSession.setAttribute(CURRENT_USER_KEY, user);
         List<GrantedAuthority> auth = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole());

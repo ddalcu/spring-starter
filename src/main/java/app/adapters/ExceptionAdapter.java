@@ -53,7 +53,7 @@ class ExceptionAdapter {
         if(!environment.equals("DEV")) {
             mailService.sendErrorEmail(e, req, user);
         }
-        
+        e.printStackTrace();
         return mav;
     }
 }

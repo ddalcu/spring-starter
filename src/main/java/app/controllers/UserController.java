@@ -1,7 +1,5 @@
 package app.controllers;
 
-import java.security.Principal;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -162,16 +160,20 @@ public class UserController {
 
     
     @RequestMapping("/user/edit/{id}")
-    public String edit(@PathVariable("id") Long id, User user, Principal principal) {
+    public String edit(@PathVariable("id") Long id, User user) {
         User u;
         User loggedInUser = userService.getLoggedInUser();
-        if(loggedInUser.getId() != id && id != 0 && !loggedInUser.isAdmin()) {
+        if(id == 0) {
+            id = loggedInUser.getId();
+        }
+        if(loggedInUser.getId() != id && !loggedInUser.isAdmin()) {
             return "user/premission-denied";
         } else if (loggedInUser.isAdmin()) {
             u = userRepository.findOne(id);
         } else {
             u = loggedInUser;
         }
+        user.setId(u.getId());
         user.setUserName(u.getUserName());
         user.setAddress(u.getAddress());
         user.setCompanyName(u.getCompanyName());
@@ -188,8 +190,8 @@ public class UserController {
         } else {
             userService.updateUser(userService.getLoggedInUser().getUserName(), user);
         }
-
-        return "redirect:/user/edit/0";
+        
+        return "redirect:/user/edit/" + user.getId() + "?updated=yes";
     }
     
     @RequestMapping(value = "/user/show", method = RequestMethod.GET)
