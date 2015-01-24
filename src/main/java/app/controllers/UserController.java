@@ -164,10 +164,13 @@ public class UserController {
     @RequestMapping("/user/edit/{id}")
     public String edit(@PathVariable("id") Long id, User user, Principal principal) {
         User u;
-        if(id == null || id == 0 ) {
-            u = userRepository.findOneByUserName(principal.getName());
-        } else {
+        User loggedInUser = userService.getLoggedInUser();
+        if(loggedInUser.getId() != id && id != 0 && !loggedInUser.isAdmin()) {
+            return "user/premission-denied";
+        } else if (loggedInUser.isAdmin()) {
             u = userRepository.findOne(id);
+        } else {
+            u = loggedInUser;
         }
         user.setUserName(u.getUserName());
         user.setAddress(u.getAddress());

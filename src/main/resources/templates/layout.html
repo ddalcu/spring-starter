@@ -69,7 +69,7 @@
 
 
     <footer>
-        <p class="pull-right">
+        <p class="pull-right" th:if="${g_user}">
             Logged in as: <span th:text="${g_user.email}">my email</span>
         </p>
     </footer>
