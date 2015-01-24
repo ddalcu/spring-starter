@@ -21,17 +21,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import app.adapters.ApplicationSecurity;
 
-@EnableAutoConfiguration
-@ComponentScan
 @SpringBootApplication
 @Controller
 public class Application {
@@ -39,8 +33,6 @@ public class Application {
     public static Logger log = Logger.getLogger(Application.class.getName());
     
     public static void main(String[] args) throws Exception {
-        
-        
         SpringApplication.run(Application.class, args);
     }
 
@@ -52,8 +44,4 @@ public class Application {
         return "index";
     }
     
-    @Bean
-    public ApplicationSecurity applicationSecurity() {
-        return new ApplicationSecurity();
-    }
 }

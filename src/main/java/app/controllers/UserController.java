@@ -53,7 +53,6 @@ public class UserController {
     public String list(ModelMap map) {
         Iterable<User> users = this.userRepository.findAll();
         map.addAttribute("users", users);
-        map.addAttribute("g_user", userService.getLoggedInUser());
         return "user/list";
     }
 

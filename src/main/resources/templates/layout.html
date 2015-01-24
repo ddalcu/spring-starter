@@ -41,7 +41,7 @@
                 <ul class="nav nav-sidebar">
                     <li th:class="${#httpServletRequest.requestURI=='/'}? active"><a th:href="@{/}" href="/">Home</a></li>
                     <li th:class="${#httpServletRequest.requestURI=='/user/list'}? active"><a th:href="@{/user/list}" href="user/list">User List</a></li>
-                    <li th:class="${#httpServletRequest.requestURI=='/user/edit'}? active"><a th:href="@{/user/edit/0}" href="user/list">Edit user</a></li>
+                    <li th:class="${#strings.startsWith(#httpServletRequest.requestURI,'/user/edit')}  ? active"><a th:href="@{/user/edit/0}" href="user/list">Edit user</a></li>
                 </ul>
 
             </div>
@@ -70,7 +70,7 @@
 
     <footer>
         <p class="pull-right">
-            Logged in as: <span th:text="${g_user}">global.username</span>
+            Logged in as: <span th:text="${g_user.email}">my email</span>
         </p>
     </footer>
 </body>
