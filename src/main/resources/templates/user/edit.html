@@ -21,6 +21,10 @@
             <input type="text" th:field="*{companyName}" class="form-control middle" placeholder="Company Name"/>
             <input type="text" th:field="*{firstName}" class="form-control middle" placeholder="First Name"/>
             <input type="text" th:field="*{lastName}" class="form-control bottom" placeholder="Last Name"/>
+            
+            <input type="text" th:field="*{password}" class="form-control bottom" placeholder="New Password, leave blank if you dont want to change it"/>
+            <input type="text" th:field="*{confirmPassword}" class="form-control bottom" placeholder="Confirm New Password"/>
+            
             <input type="hidden" th:field="*{userName}"/>
             <input type="hidden" th:field="*{id}"/>
             

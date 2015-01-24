@@ -3,6 +3,7 @@ package app.models;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -21,6 +22,9 @@ public class User {
     @NotNull
     @Size(min = 3, max = 100, message = "Password must at least 3 characters.")
     private String password;
+    
+    @Transient
+    private String confirmPassword;
     
     @Email(message = "Email address is not valid.")
     @NotNull
@@ -64,6 +68,14 @@ public class User {
         this.password = password;
     }
 
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
     public String getToken() {
         return token;
     }
@@ -88,10 +100,6 @@ public class User {
         this.role = role;
     }
     
-    public Boolean isAdmin() {
-        return this.role.equals("ROLE_ADMIN");
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -130,5 +138,13 @@ public class User {
 
     public void setLastLogin(String lastLogin) {
         this.lastLogin = lastLogin;
+    }
+    
+    public Boolean isAdmin() {
+        return this.role.equals("ROLE_ADMIN");
+    }
+    
+    public Boolean isMatchingPasswords() {
+        return this.password.equals(this.confirmPassword);
     }
 }

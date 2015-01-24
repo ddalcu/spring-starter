@@ -184,14 +184,23 @@ public class UserController {
     }
     
     @RequestMapping(value = "/user/edit", method = RequestMethod.POST)
-    public String editPost(User user) {
+    public String editPost(@Valid User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "/user/edit";
+        }
+        if(user.getPassword().length() > 0) {
+            if(!user.isMatchingPasswords()) {
+                result.rejectValue("confirmPassword", "Passwords must match");
+                return "/user/edit";
+            }
+        }
         if(userService.getLoggedInUser().isAdmin()) {
             userService.updateUser(user);
         } else {
             userService.updateUser(userService.getLoggedInUser().getUserName(), user);
         }
         
-        return "redirect:/user/edit/" + user.getId() + "?updated=yes";
+        return "/user/edit";
     }
     
     @RequestMapping(value = "/user/show", method = RequestMethod.GET)
