@@ -22,6 +22,16 @@
             
             <p class="alert alert-success" th:if="${#httpServletRequest.getParameter('updated')}">You changes have been saved</p>
         </form>
+            
+        <form class="form-signin" method="post" enctype="multipart/form-data" th:action="@{/user/upload}">
+            <h2>Upload Avatar</h2>
+            <input type="file" name="file" class="form-control top"/>
+            
+            <input type="text" name="name" class="form-control bottom"/> 
+            
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Upload</button>
+        </form>
         <a th:href="@{/user/reset-password}">Change Password</a>
     </div>
 </body>

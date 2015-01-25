@@ -1,7 +1,13 @@
 package app.controllers;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+
+import javax.imageio.ImageIO;
 import javax.validation.Valid;
 
+import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +20,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import app.models.User;
@@ -197,5 +206,32 @@ public class UserController {
         }
         
         return "redirect:/user/edit/" + user.getId() + "?updated";
+    }
+    
+    @RequestMapping(value = "/user/upload", method = RequestMethod.POST)
+    public @ResponseBody String handleFileUpload(@RequestParam("name") String name, 
+            @RequestParam("file") MultipartFile file) {
+        if (!file.isEmpty()) {
+            try {
+                
+                byte[] bytes = file.getBytes();
+                
+                
+                ByteArrayInputStream imageInputStream = new ByteArrayInputStream(bytes);
+                BufferedImage image = ImageIO.read(imageInputStream);
+                BufferedImage thumbnail = Scalr.resize(image, 150);
+                
+                File thumbnailOut = new File(name + "_thumbnail");
+                ImageIO.write(thumbnail, "png", thumbnailOut);
+                
+                File imageOut = new File(name + "_full");
+                ImageIO.write(image, "png", imageOut);
+                return "You successfully uploaded " + name + "!";
+            } catch (Exception e) {
+                return "You failed to upload " + name + " => " + e.getMessage();
+            }
+        } else {
+            return "You failed to upload " + name + " because the file was empty.";
+        }
     }
 }
