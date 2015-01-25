@@ -44,6 +44,8 @@ public class User {
     
     private String lastLogin;
     
+    private String profilePicture;
+    
     public Long getId() {
         return id;
     }
@@ -140,6 +142,14 @@ public class User {
         this.lastLogin = lastLogin;
     }
     
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public Boolean isAdmin() {
         return this.role.equals("ROLE_ADMIN");
     }

@@ -160,9 +160,13 @@ public class UserService implements UserDetailsService {
     }
     
     public User getLoggedInUser() {
+        return getLoggedInUser(false);
+    }
+    
+    public User getLoggedInUser(Boolean forceFresh) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = (User) httpSession.getAttribute(CURRENT_USER_KEY);
-        if(httpSession.getAttribute(CURRENT_USER_KEY) == null) {
+        if(forceFresh || httpSession.getAttribute(CURRENT_USER_KEY) == null) {
             user = this.repo.findOneByUserName(userName);
             httpSession.setAttribute(CURRENT_USER_KEY, user);
         }
@@ -171,5 +175,9 @@ public class UserService implements UserDetailsService {
     
     public void updateLastLogin(String userName) {
         this.repo.updateLastLogin(userName);
+    }
+
+    public void updateProfilePicture(User user, String profilePicture) {
+        this.repo.updateProfilePicture(user.getUserName(), profilePicture);
     }
 }

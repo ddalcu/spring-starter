@@ -33,4 +33,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Transactional
     @Query("update User u set u.lastLogin = CURRENT_TIMESTAMP where u.userName = ?1")
     int updateLastLogin(String userName);
+    
+    @Modifying
+    @Transactional
+    @Query("update User u set u.profilePicture = ?2 where u.userName = ?1")
+    int updateProfilePicture(String userName, String profilePicture);
 }
