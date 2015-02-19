@@ -6,8 +6,7 @@ Every example out there is bloated with a lot of unnecessary code.
 
 To run, just clone it then..
 
-    mvn install
-    java -jar target/app-0.0.1-SNAPSHOT.jar   (or run Application.java within eclipse)
+    mvn spring-boot:run   (or run Application.java within eclipse)
 
 
 
@@ -15,6 +14,11 @@ Uses thymeleaf for templating, I find this template engine very easy to use and 
 H2 or Mysql for DB, configure it via application.properties
 
 
-TODO:
-
-* Make activation and password reset code uniform, urls, views and java code
+Features:
+1. User Registration
+2. User Activation via e-mail link
+3. Password Reset via e-mail link
+4. User Admin when ROLE_ADMIN
+5. Edit Profile
+6. Upload Profile Picture
+7. Admins can login as other users using "Login As" link in the user editor.
