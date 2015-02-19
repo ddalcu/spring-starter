@@ -15,10 +15,11 @@ H2 or Mysql for DB, configure it via application.properties
 
 
 Features:
-1. User Registration
-2. User Activation via e-mail link
-3. Password Reset via e-mail link
-4. User Admin when ROLE_ADMIN
-5. Edit Profile
-6. Upload Profile Picture
-7. Admins can login as other users using "Login As" link in the user editor.
+
+* User Registration
+* User Activation via e-mail link
+* Password Reset via e-mail link
+* User Admin when ROLE_ADMIN
+* Edit Profile
+* Upload Profile Picture
+* Admins can login as other users using "Login As" link in the user editor.
