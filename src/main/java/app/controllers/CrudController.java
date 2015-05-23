@@ -12,7 +12,6 @@ import app.services.CrudService;
 
 @RestController
 public abstract class CrudController<M extends Model, S extends CrudService<M, ? extends CrudRepository<M,Long>>> {
-    Class<M> model;
     S service;
     
     public abstract void setService(S service);
