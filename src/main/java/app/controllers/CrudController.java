@@ -24,7 +24,7 @@ public abstract class CrudController<M extends Model, S extends CrudService<M, ?
         if(isAuthorized(object.getId(), service)) {
             return service.save(object);
         }
-        logUnauthorisedAccess();
+        logUnauthorizedAccess();
         return null;
     }
     
@@ -33,7 +33,7 @@ public abstract class CrudController<M extends Model, S extends CrudService<M, ?
         if(isAuthorized(object.getId(), service)) {
             return service.update(object);
         }
-        logUnauthorisedAccess();
+        logUnauthorizedAccess();
         return null;
     }
     
@@ -42,7 +42,7 @@ public abstract class CrudController<M extends Model, S extends CrudService<M, ?
         if(isAuthorized(id, service)) {
             return service.delete(id);
         }
-        logUnauthorisedAccess();
+        logUnauthorizedAccess();
         return null;
     }
     
@@ -51,7 +51,7 @@ public abstract class CrudController<M extends Model, S extends CrudService<M, ?
         if(isAuthorized(id, service)) {
             return service.get(id);
         }
-        logUnauthorisedAccess();
+        logUnauthorizedAccess();
         return null;
     }
     
@@ -61,7 +61,7 @@ public abstract class CrudController<M extends Model, S extends CrudService<M, ?
         return service.getAll();
     }
     
-    private void logUnauthorisedAccess() {
-        System.out.println("!!UN-AUTHORISED ACCESS DETECTED!!");
+    private void logUnauthorizedAccess() {
+        System.out.println("!!UN-AUTHORIZED ACCESS DETECTED!!");
     }
 }
