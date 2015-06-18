@@ -214,7 +214,12 @@ public class UserController {
         } else {
             userService.updateUser(userService.getLoggedInUser().getUserName(), user);
         }
-        
+
+        if (userService.getLoggedInUser().getId().equals(user.getId())) {
+            // put updated user to session
+            userService.getLoggedInUser(true);
+        }
+
         return "redirect:/user/edit/" + user.getId() + "?updated";
     }
     
