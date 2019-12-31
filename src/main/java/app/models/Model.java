@@ -2,7 +2,6 @@ package app.models;
 
 import java.sql.Timestamp;
 import java.util.Date;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -11,6 +10,7 @@ import javax.persistence.Version;
 
 @MappedSuperclass
 public abstract class Model {
+
     @GeneratedValue
     @Id
     private Long id;
@@ -22,30 +22,37 @@ public abstract class Model {
 
     @PrePersist
     void createdAt() {
+
         this.setDateCreated(new Date());
     }
 
     public Long getId() {
+
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
+
         this.id = id;
     }
 
     public Date getDateCreated() {
+
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(final Date dateCreated) {
+
         this.dateCreated = dateCreated;
     }
 
     public Timestamp getDateModified() {
+
         return dateModified;
     }
 
-    public void setDateModified(Timestamp dateModified) {
+    public void setDateModified(final Timestamp dateModified) {
+
         this.dateModified = dateModified;
     }
 }
