@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorate="~{layout/sidebar}">
 <head>
 <title>Edit User</title>
 </head>
@@ -29,7 +29,7 @@
             
             <input type="text" name="name" class="form-control bottom"/> 
             
-            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <!--  >input type="hidden" name="_csrf" th:value="${_csrf.token}" /-->
             <button class="btn btn-lg btn-primary btn-block" type="submit">Upload</button>
         </form>
         <a th:href="@{/user/reset-password}">Change Password</a>

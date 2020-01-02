@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorate="~{layout/no-menu}">
 <head>
 <title>LOGIN</title>
 </head>
@@ -21,8 +21,7 @@
             </div>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
-
-
+        <p><a th:href="@{/user/register}">Register for a new account</a> | <a th:href="@{/user/reset-password}">Reset Password</a></p>
     </div>
 </body>
 </html>
