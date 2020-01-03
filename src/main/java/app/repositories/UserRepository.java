@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import app.models.User;
+import app.models.entity.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {

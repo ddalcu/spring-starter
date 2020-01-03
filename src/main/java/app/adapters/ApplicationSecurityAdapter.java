@@ -1,13 +1,13 @@
 package app.adapters;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import app.configs.ApplicationConfig;
 import app.services.UserService;
 
 @Configuration
@@ -18,8 +18,8 @@ public class ApplicationSecurityAdapter extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
-    @Value("${app.secret}")
-    private String applicationSecret;
+    @Autowired
+    private ApplicationConfig config;
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -38,13 +38,13 @@ public class ApplicationSecurityAdapter extends WebSecurityConfigurerAdapter {
         .antMatchers("/css/**").permitAll()
         .antMatchers("/js/**").permitAll()
         .antMatchers("/images/**").permitAll()
-                .anyRequest().authenticated()
+        .anyRequest().authenticated()
         .and()
         .formLogin().loginPage("/login").failureUrl("/login?error").permitAll()
         .and()
         .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login")
         .and()
-        .rememberMe().key(applicationSecret)
+                .rememberMe().key(config.getSecret())
         .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS).and().csrf().disable().headers().frameOptions().disable();
     }
 

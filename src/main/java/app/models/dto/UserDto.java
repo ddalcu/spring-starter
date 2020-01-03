@@ -1,20 +1,21 @@
-package app.models;
+package app.models.dto;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import app.models.entity.User;
 
-@Entity
-public class User extends AbstractEntity implements Serializable {
+public class UserDto implements Serializable {
 
     private static final long serialVersionUID = -4512071323586705398L;
 
     private static final int MAX_CHARS = 100;
 
     private static final int MIN_CHARS = 3;
+
+    private Long id;
 
     @NotNull
     @Size(min = MIN_CHARS, max = MAX_CHARS, message = "Username must at least 3 characters.")
@@ -46,6 +47,16 @@ public class User extends AbstractEntity implements Serializable {
     private String lastLogin;
 
     private String profilePicture;
+
+    public Long getId() {
+
+        return id;
+    }
+
+    public void setId(final Long id) {
+
+        this.id = id;
+    }
 
     public String getUserName() {
 
@@ -175,5 +186,21 @@ public class User extends AbstractEntity implements Serializable {
     public boolean isMatchingPasswords() {
 
         return this.password.equals(this.confirmPassword);
+    }
+
+    public User toEntity() {
+
+        final User user = new User();
+        user.setUserName(this.getUserName());
+        user.setPassword(this.getPassword());
+        user.setConfirmPassword(this.getConfirmPassword());
+        user.setEmail(this.getEmail());
+        user.setToken(this.getToken());
+        user.setFirstName(this.getFirstName());
+        user.setLastName(this.getLastName());
+        user.setAddress(this.getAddress());
+        user.setCompanyName(this.getCompanyName());
+        user.setProfilePicture(this.getProfilePicture());
+        return user;
     }
 }

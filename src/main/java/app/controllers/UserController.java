@@ -15,7 +15,6 @@ import org.imgscalr.Scalr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import app.models.User;
+import app.configs.ApplicationConfig;
+import app.models.dto.UserDto;
+import app.models.entity.User;
 import app.repositories.UserRepository;
 import app.services.MailService;
 import app.services.UserService;
@@ -37,11 +38,8 @@ public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @Value("${app.user.verification}")
-    private boolean requireActivation;
-
-    @Value("${app.user.root}")
-    private String userRoot;
+    @Autowired
+    private ApplicationConfig config;
 
     @Autowired
     private UserRepository userRepository;
@@ -55,7 +53,7 @@ public class UserController {
     public static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/login")
-    public String login(final User user) {
+    public String login(final UserDto userDto) {
 
         return "user/login";
     }
@@ -69,58 +67,59 @@ public class UserController {
     }
 
     @GetMapping("/user/register")
-    public String register(final User user) {
+    public String register(final UserDto userDto) {
 
         return "user/register";
     }
 
     @PostMapping(value = "/user/register")
-    public String registerPost(@Valid final User user, final BindingResult result) {
+    public String registerPost(@Valid final UserDto userDto, final BindingResult result) {
 
         if (result.hasErrors()) {
             return "user/register";
         }
 
-        final User registeredUser = userService.register(user);
+        final User registeredUser = userService.register(userDto);
         if (registeredUser != null) {
-            mailService.sendNewRegistration(user.getEmail(), registeredUser.getToken());
-            if (!requireActivation) {
-                userService.autoLogin(user.getUserName());
+            mailService.sendNewRegistration(userDto.getEmail(), registeredUser.getToken());
+            if (!config.isUserVerification()) {
+                userService.autoLogin(userDto.getUserName());
                 return "redirect:/";
             }
             return "user/register-success";
         } else {
-            log.error("User already exists: {}", user.getUserName());
+            log.error("User already exists: {}", userDto.getUserName());
             result.rejectValue("email", "error.alreadyExists", "This username or email already exists, please try to reset password instead.");
             return "user/register";
         }
     }
 
     @GetMapping("/user/reset-password")
-    public String resetPasswordEmail(final User user) {
+    public String resetPasswordEmail(final UserDto userDto) {
 
         return "user/reset-password";
     }
 
     @PostMapping("/user/reset-password")
-    public String resetPasswordEmailPost(final User user, final BindingResult result) {
+    public String resetPasswordEmailPost(final UserDto userDto, final BindingResult result) {
 
-        final User u = userRepository.findOneByEmail(user.getEmail());
+        final User u = userRepository.findOneByEmail(userDto.getEmail());
         if (u == null) {
             result.rejectValue("email", "error.doesntExist", "We could not find this email in our databse");
             return "user/reset-password";
         } else {
             final String resetToken = userService.createResetPasswordToken(u, true);
-            mailService.sendResetPassword(user.getEmail(), resetToken);
+            LOGGER.debug("Resetting password for user: {}, new token: {}", userDto.getEmail(), resetToken);
+            mailService.sendResetPassword(userDto.getEmail(), resetToken);
         }
         return "user/reset-password-sent";
     }
 
     @GetMapping("/user/reset-password-change")
-    public String resetPasswordChange(final User user, final BindingResult result, final Model model) {
+    public String resetPasswordChange(final UserDto userDto, final BindingResult result, final Model model) {
 
-        final User u = userRepository.findOneByToken(user.getToken());
-        if (user.getToken().equals("1") || u == null) {
+        final User u = userRepository.findOneByToken(userDto.getToken());
+        if (userDto.getToken().equals("1") || u == null) {
             result.rejectValue("activation", "error.doesntExist", "We could not find this reset password request.");
         } else {
             model.addAttribute("userName", u.getUserName());
@@ -129,11 +128,11 @@ public class UserController {
     }
 
     @PostMapping("/user/reset-password-change")
-    public String resetPasswordChangePost(final User user, final BindingResult result, final Model model) {
+    public String resetPasswordChangePost(final UserDto userDto, final BindingResult result, final Model model) {
 
-        final boolean isChanged = userService.resetPassword(user);
+        final boolean isChanged = userService.resetPassword(userDto);
         if (isChanged) {
-            userService.autoLogin(user.getUserName());
+            userService.autoLogin(userDto.getUserName());
             return "redirect:/";
         } else {
             model.addAttribute("error", "Password could not be changed");
@@ -142,15 +141,15 @@ public class UserController {
     }
 
     @GetMapping("/user/activation-send")
-    public String activationSend(final User user) {
+    public String activationSend(final UserDto userDto) {
 
         return "/user/activation-send";
     }
 
     @PostMapping("/user/activation-send")
-    public String activationSendPost(final User user, final BindingResult result) {
+    public String activationSendPost(final UserDto userDto, final BindingResult result) {
 
-        final User u = userService.resetActivation(user.getEmail());
+        final User u = userService.resetActivation(userDto.getEmail());
         if (u != null) {
             mailService.sendNewActivationRequest(u.getEmail(), u.getToken());
             return "/user/activation-sent";
@@ -179,14 +178,14 @@ public class UserController {
     }
 
     @GetMapping("/user/autologin")
-    public String autoLogin(final User user) {
+    public String autoLogin(final UserDto userDto) {
 
-        userService.autoLogin(user.getUserName());
+        userService.autoLogin(userDto.getUserName());
         return "redirect:/";
     }
 
     @GetMapping("/user/edit/{id}")
-    public String edit(@PathVariable("id") final Long id, final User user) {
+    public String edit(@PathVariable("id") final Long id, final UserDto userDto) {
 
         final User u;
         Long lookupId = id;
@@ -201,36 +200,35 @@ public class UserController {
         } else {
             u = loggedInUser;
         }
-        user.setId(u.getId());
-        user.setUserName(u.getUserName());
-        user.setAddress(u.getAddress());
-        user.setCompanyName(u.getCompanyName());
-        user.setEmail(u.getEmail());
-        user.setFirstName(u.getFirstName());
-        user.setLastName(u.getLastName());
+        userDto.setId(u.getId());
+        userDto.setUserName(u.getUserName());
+        userDto.setAddress(u.getAddress());
+        userDto.setCompanyName(u.getCompanyName());
+        userDto.setEmail(u.getEmail());
+        userDto.setFirstName(u.getFirstName());
+        userDto.setLastName(u.getLastName());
 
         return "/user/edit";
     }
 
     @PostMapping("/user/edit")
-    public String editPost(@Valid final User user, final BindingResult result) {
+    public String edit(@Valid final UserDto userDto, final BindingResult result) {
 
         if (result.hasFieldErrors("email")) {
             return "/user/edit";
         }
-
         if (userService.getLoggedInUser().isAdmin()) {
-            userService.updateUser(user);
+            userService.updateUser(userDto);
         } else {
-            userService.updateUser(userService.getLoggedInUser().getUserName(), user);
+            userService.updateUser(userService.getLoggedInUser().getUserName(), userDto);
         }
 
-        if (userService.getLoggedInUser().getId().equals(user.getId())) {
+        if (userService.getLoggedInUser().getId().equals(userDto.getId())) {
             // put updated user to session
             userService.getLoggedInUser(true);
         }
 
-        return "redirect:/user/edit/" + user.getId() + "?updated";
+        return "redirect:/user/edit/" + userDto.getId() + "?updated";
     }
 
     @PostMapping("/user/upload")
@@ -241,7 +239,7 @@ public class UserController {
         final User user = userService.getLoggedInUser();
         if (!file.isEmpty()) {
             try {
-                final String saveDirectory = userRoot + File.separator + user.getId() + File.separator;
+                final String saveDirectory = config.getUserRoot() + File.separator + user.getId() + File.separator;
                 createSaveDirectory(saveDirectory);
 
                 final byte[] bytes = file.getBytes();
@@ -279,7 +277,7 @@ public class UserController {
     public @ResponseBody byte[] profilePicture() throws IOException {
 
         final User u = userService.getLoggedInUser();
-        final String profilePicture = userRoot + File.separator + u.getId() + File.separator + u.getProfilePicture();
+        final String profilePicture = config.getUserRoot() + File.separator + u.getId() + File.separator + u.getProfilePicture();
         if (new File(profilePicture).exists()) {
             return IOUtils.toByteArray(new FileInputStream(profilePicture));
         } else {

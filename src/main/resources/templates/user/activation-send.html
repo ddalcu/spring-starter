@@ -5,7 +5,7 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <form class="form-signin" th:action="@{/user/activation-send}" th:object="${user}" action="/user/activation-send" method="post">
+        <form class="form-signin" th:action="@{/user/activation-send}" th:object="${userDto}" action="/user/activation-send" method="post">
             <h2 class="form-signin-heading">Re-send Activation</h2>
             
             <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>

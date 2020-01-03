@@ -1,4 +1,4 @@
-package app.models;
+package app.models.entity;
 
 import java.time.Instant;
 import javax.persistence.GeneratedValue;

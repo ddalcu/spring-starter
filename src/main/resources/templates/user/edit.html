@@ -5,8 +5,8 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <form class="form-signin" th:action="@{/user/edit}" th:object="${user}" method="post">
-            <h2 class="form-signin-heading">Edit <span th:text="${user.userName}"></span> account</h2>
+        <form class="form-signin" th:action="@{/user/edit}" th:object="${userDto}" method="post">
+            <h2 class="form-signin-heading">Edit <span th:text="*{userName}"></span> account</h2>
             
             <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert alert-danger">Email error</div>
 

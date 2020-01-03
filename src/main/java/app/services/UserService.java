@@ -3,9 +3,7 @@ package app.services;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.io.Charsets;
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,8 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 import app.Application;
-import app.models.User;
+import app.configs.ApplicationConfig;
+import app.models.dto.UserDto;
+import app.models.entity.User;
 import app.repositories.UserRepository;
 
 @Service
@@ -24,11 +25,8 @@ public class UserService implements UserDetailsService {
 
     private static final int INVALID_ACTIVATION_LENGTH = 5;
 
-    @Value("${app.user.verification}")
-    private boolean requireActivation;
-
-    @Value("${app.secret}")
-    private String applicationSecret;
+    @Autowired
+    private ApplicationConfig config;
 
     @Autowired
     private UserRepository repo;
@@ -39,14 +37,14 @@ public class UserService implements UserDetailsService {
     private static final String CURRENT_USER_KEY = "CURRENT_USER";
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) {
 
         final User user = repo.findOneByUserNameOrEmail(username, username);
 
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        if (requireActivation && !user.getToken().equals("1")) {
+        if (config.isUserVerification() && !user.getToken().equals("1")) {
             Application.LOGGER.error("User [{}] tried to login but is not activated", username);
             throw new UsernameNotFoundException(username + " has not been activated yet");
         }
@@ -72,8 +70,9 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User register(final User user) {
+    public User register(final UserDto userDto) {
 
+        final User user = userDto.toEntity();
         user.setPassword(encodeUserPassword(user.getPassword()));
 
         if (this.repo.findOneByUserName(user.getUserName()) == null && this.repo.findOneByEmail(user.getEmail()) == null) {
@@ -114,8 +113,8 @@ public class UserService implements UserDetailsService {
 
     public String createActivationToken(final User user, final boolean save) {
 
-        final String toEncode = user.getUserName() + applicationSecret;
-        final String activationToken = MD5Encoder.encode(toEncode.getBytes(Charsets.UTF_8));
+        final String toEncode = user.getUserName() + config.getSecret();
+        final String activationToken = DigestUtils.md5DigestAsHex(toEncode.getBytes(Charsets.UTF_8));
         if (save) {
             user.setToken(activationToken);
             this.repo.save(user);
@@ -125,8 +124,8 @@ public class UserService implements UserDetailsService {
 
     public String createResetPasswordToken(final User user, final boolean save) {
 
-        final String toEncode = user.getEmail() + applicationSecret;
-        final String resetToken = MD5Encoder.encode(toEncode.getBytes(Charsets.UTF_8));
+        final String toEncode = user.getEmail() + config.getSecret();
+        final String resetToken = DigestUtils.md5DigestAsHex(toEncode.getBytes(Charsets.UTF_8));
         if (save) {
             user.setToken(resetToken);
             this.repo.save(user);
@@ -144,11 +143,11 @@ public class UserService implements UserDetailsService {
         return null;
     }
 
-    public Boolean resetPassword(final User user) {
+    public Boolean resetPassword(final UserDto userDto) {
 
-        final User u = this.repo.findOneByUserName(user.getUserName());
+        final User u = this.repo.findOneByUserName(userDto.getUserName());
         if (u != null) {
-            u.setPassword(encodeUserPassword(user.getPassword()));
+            u.setPassword(encodeUserPassword(userDto.getPassword()));
             u.setToken("1");
             this.repo.save(u);
             return true;
@@ -156,12 +155,12 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public void updateUser(final User user) {
+    public void updateUser(final UserDto user) {
 
         updateUser(user.getUserName(), user);
     }
 
-    public void updateUser(final String userName, final User newData) {
+    public void updateUser(final String userName, final UserDto newData) {
 
         this.repo.updateUser(
                 userName,

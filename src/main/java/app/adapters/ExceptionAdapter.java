@@ -4,13 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import app.models.User;
+import app.configs.ApplicationConfig;
+import app.models.entity.User;
 import app.services.MailService;
 import app.services.UserService;
 
@@ -23,11 +23,8 @@ class ExceptionAdapter {
     @Autowired
     private MailService mailService;
 
-    @Value("${app.email.support}")
-    private String supportEmail;
-
-    @Value("${app.email.errors}")
-    private boolean sendErrorEmails;
+    @Autowired
+    private ApplicationConfig config;
 
     public static final String DEFAULT_ERROR_VIEW = "error";
 
@@ -50,9 +47,9 @@ class ExceptionAdapter {
         model.addAttribute("exception", exception);
         model.addAttribute("url", req.getRequestURL());
         model.addAttribute("user", user);
-        model.addAttribute("support", supportEmail);
+        model.addAttribute("support", config.getEmailSupport());
 
-        if (sendErrorEmails) {
+        if (config.isEmailErrors()) {
             mailService.sendErrorEmail(exception, req, user);
         }
         LOGGER.error("Error handler invoked", exception);

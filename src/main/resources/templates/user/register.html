@@ -5,7 +5,7 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <form class="form-signin" th:action="@{/user/register}" th:object="${user}" action="/user/register" method="post">
+        <form class="form-signin" th:action="@{/user/register}" th:object="${userDto}" action="/user/register" method="post">
             <h2 class="form-signin-heading">Please register</h2>
             
             <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
