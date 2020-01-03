@@ -13,6 +13,8 @@ import app.services.UserService;
 @Configuration
 public class ApplicationSecurityAdapter extends WebSecurityConfigurerAdapter {
 
+    private static final int TOKEN_VALIDITY_SECONDS = 31536000;
+
     @Autowired
     private UserService userService;
 
@@ -43,7 +45,7 @@ public class ApplicationSecurityAdapter extends WebSecurityConfigurerAdapter {
         .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login")
         .and()
         .rememberMe().key(applicationSecret)
-        .tokenValiditySeconds(31536000).and().csrf().disable().headers().frameOptions().disable();
+        .tokenValiditySeconds(TOKEN_VALIDITY_SECONDS).and().csrf().disable().headers().frameOptions().disable();
     }
 
     @Override

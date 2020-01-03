@@ -2,6 +2,7 @@ package app.services;
 
 import java.util.List;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.io.Charsets;
 import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,8 @@ import app.repositories.UserRepository;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private static final int INVALID_ACTIVATION_LENGTH = 5;
 
     @Value("${app.user.verification}")
     private boolean requireActivation;
@@ -44,7 +47,7 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
         if (requireActivation && !user.getToken().equals("1")) {
-            Application.log.error("User [{}] tried to login but is not activated", username);
+            Application.LOGGER.error("User [{}] tried to login but is not activated", username);
             throw new UsernameNotFoundException(username + " has not been activated yet");
         }
         httpSession.setAttribute(CURRENT_USER_KEY, user);
@@ -97,7 +100,7 @@ public class UserService implements UserDetailsService {
 
     public User activate(final String activation) {
 
-        if (activation.equals("1") || activation.length() < 5) {
+        if ("1".equals(activation) || activation.length() < INVALID_ACTIVATION_LENGTH) {
             return null;
         }
         final User u = this.repo.findOneByToken(activation);
@@ -112,7 +115,7 @@ public class UserService implements UserDetailsService {
     public String createActivationToken(final User user, final boolean save) {
 
         final String toEncode = user.getUserName() + applicationSecret;
-        final String activationToken = MD5Encoder.encode(toEncode.getBytes());
+        final String activationToken = MD5Encoder.encode(toEncode.getBytes(Charsets.UTF_8));
         if (save) {
             user.setToken(activationToken);
             this.repo.save(user);
@@ -123,7 +126,7 @@ public class UserService implements UserDetailsService {
     public String createResetPasswordToken(final User user, final boolean save) {
 
         final String toEncode = user.getEmail() + applicationSecret;
-        final String resetToken = MD5Encoder.encode(toEncode.getBytes());
+        final String resetToken = MD5Encoder.encode(toEncode.getBytes(Charsets.UTF_8));
         if (save) {
             user.setToken(resetToken);
             this.repo.save(user);

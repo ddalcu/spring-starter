@@ -33,13 +33,12 @@ import app.services.MailService;
 import app.services.UserService;
 
 @Controller
-// @RequestMapping("/user/*")
 public class UserController {
 
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Value("${app.user.verification}")
-    private Boolean requireActivation;
+    private boolean requireActivation;
 
     @Value("${app.user.root}")
     private String userRoot;
@@ -52,6 +51,8 @@ public class UserController {
 
     @Autowired
     private MailService mailService;
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/login")
     public String login(final User user) {
@@ -185,17 +186,18 @@ public class UserController {
     }
 
     @GetMapping("/user/edit/{id}")
-    public String edit(@PathVariable("id") Long id, final User user) {
+    public String edit(@PathVariable("id") final Long id, final User user) {
 
-        User u;
+        final User u;
+        Long lookupId = id;
         final User loggedInUser = userService.getLoggedInUser();
         if (id == 0) {
-            id = loggedInUser.getId();
+            lookupId = loggedInUser.getId();
         }
-        if (loggedInUser.getId() != id && !loggedInUser.isAdmin()) {
+        if (!loggedInUser.getId().equals(lookupId) && !loggedInUser.isAdmin()) {
             return "user/premission-denied";
         } else if (loggedInUser.isAdmin()) {
-            u = userRepository.findById(id).orElse(null);
+            u = userRepository.findById(lookupId).orElse(null);
         } else {
             u = loggedInUser;
         }
@@ -240,10 +242,7 @@ public class UserController {
         if (!file.isEmpty()) {
             try {
                 final String saveDirectory = userRoot + File.separator + user.getId() + File.separator;
-                final File test = new File(saveDirectory);
-                if (!test.exists()) {
-                    test.mkdirs();
-                }
+                createSaveDirectory(saveDirectory);
 
                 final byte[] bytes = file.getBytes();
 
@@ -255,13 +254,25 @@ public class UserController {
                 ImageIO.write(thumbnail, "png", thumbnailOut);
 
                 userService.updateProfilePicture(user, fileName);
-                userService.getLoggedInUser(true); // Force refresh of cached User
+                userService.getLoggedInUser(true);
                 log.debug("Image Saved::: {}", fileName);
             } catch (final Exception e) {
                 log.error("Error Uploading File", e);
             }
         }
         return "redirect:/user/edit/" + user.getId();
+    }
+
+    private void createSaveDirectory(final String saveDirectory) {
+
+        final File test = new File(saveDirectory);
+        if (!test.exists()) {
+            try {
+                test.mkdirs();
+            } catch (final Exception e) {
+                LOGGER.error("Error creating user directory", e);
+            }
+        }
     }
 
     @GetMapping(value = "/user/profile-picture", produces = MediaType.IMAGE_JPEG_VALUE)

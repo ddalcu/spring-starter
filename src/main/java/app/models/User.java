@@ -1,26 +1,27 @@
 package app.models;
 
+import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-public class User {
+public class User extends AbstractEntity implements Serializable {
 
-    @GeneratedValue
-    @Id
-    private Long id;
+    private static final long serialVersionUID = -4512071323586705398L;
+
+    private static final int MAX_CHARS = 100;
+
+    private static final int MIN_CHARS = 3;
 
     @NotNull
-    @Size(min = 3, max = 100, message = "Username must at least 3 characters.")
+    @Size(min = MIN_CHARS, max = MAX_CHARS, message = "Username must at least 3 characters.")
     private String userName;
 
     @NotNull
-    @Size(min = 3, max = 100, message = "Password must at least 3 characters.")
+    @Size(min = MIN_CHARS, max = MAX_CHARS, message = "Password must at least 3 characters.")
     private String password;
 
     @Transient
@@ -45,16 +46,6 @@ public class User {
     private String lastLogin;
 
     private String profilePicture;
-
-    public Long getId() {
-
-        return id;
-    }
-
-    public void setId(final Long id) {
-
-        this.id = id;
-    }
 
     public String getUserName() {
 
@@ -178,7 +169,7 @@ public class User {
 
     public boolean isAdmin() {
 
-        return this.role.equals("ROLE_ADMIN");
+        return "ROLE_ADMIN".equals(this.role);
     }
 
     public boolean isMatchingPasswords() {

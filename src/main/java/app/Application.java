@@ -31,7 +31,7 @@ import nz.net.ultraq.thymeleaf.LayoutDialect;
 @Controller
 public class Application {
 
-    public static final Logger log = LoggerFactory.getLogger(Application.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     public static void main(final String[] args) throws Exception {
 
@@ -41,7 +41,7 @@ public class Application {
     @GetMapping("/")
     public String home(final Map<String, Object> model) {
 
-        log.debug("Index page hit");
+        LOGGER.debug("Index page hit");
         model.put("message", "Hello World");
         model.put("title", "Hello Home");
         model.put("date", new Date());

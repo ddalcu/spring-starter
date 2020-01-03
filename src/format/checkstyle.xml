@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+          "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<!-- 2020 Checkstyle -->
+<module name="Checker">
+    <property name="severity" value="error" />
+    <property name="charset" value="UTF-8" />
+    <property name="fileExtensions" value="java, properties, xml" />
+    <module name="LineLength">
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|div|section" />
+        <property name="max" value="180" />
+        <property name="tabWidth" value="4" />
+    </module>
+    <module name="TreeWalker">
+        <module name="OuterTypeFilename" />
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL" />
+            <property name="format" value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
+            <property name="message" value="Avoid using corresponding octal or Unicode escape." />
+        </module>
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters" value="true" />
+            <property name="allowByTailComment" value="true" />
+            <property name="allowNonPrintableEscapes" value="true" />
+        </module>
+        <module name="AvoidStarImport" />
+        <module name="OneTopLevelClass" />
+        <module name="NoLineWrap" />
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT" />
+            <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH" />
+        </module>
+        <module name="NeedBraces" />
+        <module name="RightCurly" />
+        <module name="RightCurly">
+            <property name="option" value="alone" />
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO, STATIC_INIT, INSTANCE_INIT" />
+        </module>
+        <module name="WhitespaceAround">
+            <property name="tokens"
+                value="ASSIGN,BAND,BAND_ASSIGN,BOR,BOR_ASSIGN,BSR,BSR_ASSIGN,BXOR,BXOR_ASSIGN,DIV,DIV_ASSIGN,DO_WHILE,EQUAL,GE,GT,LAND,LCURLY,LE,LITERAL_ASSERT,
+                LITERAL_CATCH,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_RETURN,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,LOR,LT,
+                MINUS,MINUS_ASSIGN,MOD,MOD_ASSIGN,NOT_EQUAL,PLUS,PLUS_ASSIGN,RCURLY,SL,SLIST,SL_ASSIGN,SR,SR_ASSIGN,STAR,STAR_ASSIGN,TYPE_EXTENSION_AND" />
+            <property name="allowEmptyConstructors" value="true" />
+            <property name="allowEmptyMethods" value="true" />
+            <property name="allowEmptyTypes" value="true" />
+            <property name="allowEmptyLoops" value="true" />
+            <message key="ws.notPreceded" value="WhitespaceAround: ''{0}'' is not preceded with whitespace." />
+            <message key="ws.notFollowed"
+                value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks may only be represented as '{}' when not part of a multi-block statement (4.1.3)" />
+        </module>
+        <module name="OneStatementPerLine" />
+        <module name="MultipleVariableDeclarations" />
+        <module name="ArrayTypeStyle" />
+        <module name="MissingSwitchDefault" />
+        <module name="FallThrough" />
+        <module name="UpperEll" />
+        <module name="ModifierOrder" />
+        <module name="EmptyLineSeparator">
+            <property name="allowMultipleEmptyLines" value="false" />
+        </module>
+        <module name="SeparatorWrap">
+            <property name="option" value="nl" />
+            <property name="tokens" value="DOT" />
+        </module>
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$" />
+            <message key="name.invalidPattern" value="Package name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="TypeName">
+            <message key="name.invalidPattern" value="Type name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$" />
+            <message key="name.invalidPattern" value="Member name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$" />
+            <message key="name.invalidPattern" value="Parameter name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$" />
+            <property name="allowOneCharVarInForLoop" value="true" />
+            <message key="name.invalidPattern" value="Local variable name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)" />
+            <message key="name.invalidPattern" value="Class type name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)" />
+            <message key="name.invalidPattern" value="Method type name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)" />
+            <message key="name.invalidPattern" value="Interface type name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="NoFinalizer" />
+        <module name="GenericWhitespace">
+            <message key="ws.notPreceded" value="GenericWhitespace ''{0}'' is not preceded with whitespace." />
+            <message key="ws.followed" value="GenericWhitespace ''{0}'' is followed by whitespace." />
+            <message key="ws.preceded" value="GenericWhitespace ''{0}'' is preceded with whitespace." />
+            <message key="ws.illegalFollow" value="GenericWhitespace ''{0}'' should followed by whitespace." />
+        </module>
+        <module name="Indentation" />
+        <module name="OverloadMethodsDeclarationOrder" />
+        <module name="MethodParamPad" />
+        <module name="OperatorWrap">
+            <property name="tokens" value="QUESTION,EQUAL,NOT_EQUAL,DIV,PLUS,MINUS,STAR,MOD,SR,BSR,GE,GT,SL,LE,LT,BXOR,BOR,LOR,BAND,LAND,LITERAL_INSTANCEOF" />
+        </module>
+        <module name="AnnotationLocation">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF" />
+        </module>
+        <module name="AnnotationLocation">
+            <property name="tokens" value="VARIABLE_DEF" />
+            <property name="allowSamelineMultipleAnnotations" value="true" />
+        </module>
+        <module name="NonEmptyAtclauseDescription">
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="JavadocTagContinuationIndentation">
+            <property name="severity" value="ignore" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="SummaryJavadoc">
+            <property name="severity" value="ignore" />
+            <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="JavadocParagraph">
+            <property name="severity" value="ignore" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="AtclauseOrder">
+            <property name="severity" value="ignore" />
+            <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF" />
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="JavadocMethod">
+            <property name="severity" value="ignore" />
+            <property name="allowedAnnotations" value="Override, Test" />
+            <property name="scope" value="public" />
+            <property name="allowThrowsTagsForSubclasses" value="true" />
+            <property name="allowMissingParamTags" value="true" />
+            <property name="allowMissingThrowsTags" value="true" />
+            <property name="allowMissingReturnTag" value="true" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$" />
+            <message key="name.invalidPattern" value="Method name ''{0}'' must match pattern ''{1}''." />
+        </module>
+        <module name="SingleLineJavadoc">
+            <property name="severity" value="ignore" />
+            <property name="ignoreInlineTags" value="false" />
+            <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit" />
+        </module>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected" />
+        </module>
+        <module name="SuppressWarnings" />
+        <module name="ConstantName" />
+        <module name="LocalFinalVariableName" />
+        <module name="AbstractClassName" />
+        <module name="StaticVariableName" />
+        <module name="IllegalImport" />
+        <module name="ImportOrder">
+            <property name="ordered" value="false" />
+            <property name="separated" value="true" />
+            <property name="caseSensitive" value="false" />
+        </module>
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+        <module name="AnonInnerLength">
+            <property name="max" value="25" />
+        </module>
+        <module name="ParameterNumber">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS" />
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="COMMA,SEMI,POST_DEC,POST_INC,GENERIC_END" />
+        </module>
+        <module name="ParenPad" />
+        <module name="TypecastParenPad">
+            <property name="tokens" value="RPAREN,TYPECAST" />
+        </module>
+        <module name="RedundantModifier" />
+        <module name="DefaultComesLast" />
+        <module name="EmptyStatement" />
+        <module name="EqualsAvoidNull" />
+        <module name="ExplicitInitialization" />
+        <module name="FinalLocalVariable">
+            <property name="tokens" value="PARAMETER_DEF,VARIABLE_DEF" />
+            <property name="validateEnhancedForLoopVariable" value="true" />
+        </module>
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true" />
+            <property name="ignoreSetter" value="true" />
+            <property name="setterCanReturnItsClass" value="true" />
+            <property name="ignoreAbstractMethods" value="true" />
+        </module>
+        <module name="IllegalInstantiation" />
+        <module name="IllegalThrows">
+            <property name="ignoredMethodNames" value="finalize,profile" />
+        </module>
+        <module name="IllegalType">
+            <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF" />
+        </module>
+        <module name="InnerAssignment" />
+        <module name="MagicNumber">
+            <property name="constantWaiverParentToken" value="TYPECAST,METHOD_CALL,EXPR,ARRAY_INIT,UNARY_MINUS,UNARY_PLUS,ELIST,STAR,ASSIGN,PLUS,MINUS,DIV,LITERAL_NEW" />
+        </module>
+        <module name="ModifiedControlVariable" />
+        <module name="PackageDeclaration" />
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+        <module name="StringLiteralEquality" />
+        <module name="SuperClone" />
+        <module name="SuperFinalize" />
+        <module name="ArrayTrailingComma" />
+        <module name="UnnecessaryParentheses" />
+        <module name="InnerTypeLast" />
+        <module name="HideUtilityClassConstructor" />
+        <module name="InterfaceIsType" />
+        <module name="MutableException" />
+        <module name="VisibilityModifier" />
+        <module name="BooleanExpressionComplexity">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="ClassFanOutComplexity">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="30" />
+            <property name="switchBlockAsSingleDecisionPoint" value="true" />
+        </module>
+        <module name="JavaNCSS">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="NPathComplexity">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="TrailingComment">
+            <property name="legalComment" value="NOSONAR"/>
+        </module>
+        <module name="UncommentedMain">
+            <property name="excludedClasses" value="^.+[Application|App].+$" />
+        </module>
+        <module name="ParameterName" />
+        <module name="ClassDataAbstractionCoupling">
+            <property name="severity" value="warning" />
+            <property name="excludedClasses" value="HashMap, HashSet, BufferedReader, InputStreamReader, ObjectMapper, URL, ArrayList, List"/>
+        </module>
+        <module name="FinalParameters" />
+        <module name="ParameterAssignment" />
+    </module>
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true" />
+    </module>
+    <module name="UniqueProperties" />
+    <module name="RegexpMultiline">
+        <property name="format" value="\r\n" />
+        <property name="message" value="CRLF line endings are prohibited" />
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="HideUtilityClassConstructor"/>
+        <property name="files" value="^.+[Application|App].+$"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="HideUtilityClassConstructor"/>
+        <property name="files" value="^.+[Application|App].+$"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="MagicNumber"/>
+        <property name="files" value=".*[\\/]src[\\/]test[\\/]"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="LineLengthCheck"/>
+        <property name="files" value=".*[\\/]src[\\/]test[\\/]"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="ClassDataAbstractionCoupling"/>
+        <property name="files" value=".*[\\/]src[\\/]test[\\/]"/>
+    </module>
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="ClassFanOutComplexity"/>
+        <property name="files" value=".*[\\/]src[\\/]test[\\/]"/>
+    </module>
+</module>

@@ -9,7 +9,7 @@ import app.services.UserService;
 public class ControllerAdvice {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @ModelAttribute("g_user")
     public User getCurrentUser() {

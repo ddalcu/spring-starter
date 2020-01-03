@@ -1,6 +1,8 @@
 package app.services;
 
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
@@ -20,21 +22,28 @@ public class MailService {
     @Value("${app.email.support}")
     private String supportEmail;
 
+    @Value("${app.email.mock}")
+    private boolean mockEmails;
+
     @Autowired
     private MailSender mailSender;
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
 
     public void sendMail(final String to, final String subject, final String text) {
 
         try {
-            final SimpleMailMessage email = new SimpleMailMessage();
-            email.setTo(to);
-            email.setSubject(subject);
-            email.setFrom(fromEmail);
-            email.setText(text);
-            mailSender.send(email);
-            System.out.println("SENT EMAIL: TO=" + to + "|SUBJECT:" + subject + "|TEXT:" + text);
+            if (!mockEmails) {
+                final SimpleMailMessage email = new SimpleMailMessage();
+                email.setTo(to);
+                email.setSubject(subject);
+                email.setFrom(fromEmail);
+                email.setText(text);
+                mailSender.send(email);
+            }
+            LOGGER.info("SENT EMAIL: TO={}|SUBJECT:{}|TEXT:{}", to, subject, text);
         } catch (final Exception e) {
-            System.err.println(e.getMessage());
+            LOGGER.error("Error sending email", e);
         }
     }
 
@@ -59,10 +68,10 @@ public class MailService {
         sendNewRegistration(to, token);
     }
 
-    public void sendErrorEmail(final Exception e, final HttpServletRequest req, final User user) {
+    public void sendErrorEmail(final Exception exception, final HttpServletRequest req, final User user) {
 
         final String subject = "Application Error: " + req.getRequestURL();
-        final String text = "An error occured in your application: " + e + "\r\nFor User:  " + user.getEmail();
+        final String text = "An error occured in your application: " + exception + "\r\nFor User:  " + user.getEmail();
         sendMail(supportEmail, subject, text);
     }
 }
