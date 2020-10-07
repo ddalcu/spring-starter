@@ -5,7 +5,7 @@
         <link href="/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
-        <div class="alert alert-danger">
+        <div layout:fragment="content" class="alert alert-danger">
             <h1>Application Error</h1>
             <h2 th:text="${title}">Title</h2>
             <div id="created" th:text="${timestamp}">July 11, 2012 2:17:16 PM CDT</div>
